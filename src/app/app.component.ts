@@ -15,6 +15,7 @@ export class AppComponent implements OnDestroy {
   title = 'NgBoy';
   cpu: CPU;
   memory: Memory;
+  file: any = null;
 
   cpuInfo: CpuInfo;
   memoryInfo: MemoryInfo;
@@ -24,16 +25,22 @@ export class AppComponent implements OnDestroy {
     this.cpu = new CPU(this.memory);
 
     const cpuObserver = this.cpu.subscribe();
-    cpuObserver.subscribe(res => this.cpuInfo = res);
-
     const memObserver = this.memory.subscribe();
-    memObserver.subscribe(res => {
-      this.memoryInfo = res;
-      console.log(res);
-    });
+
+    cpuObserver.subscribe(res => this.cpuInfo = res);
+    memObserver.subscribe(res => this.memoryInfo = res);
   }
 
   ngOnDestroy(): void {
     this.subscriptions.forEach(sub => sub.unsubscribe());
+  }
+
+  handleFileInput($event) {
+    this.file = $event.target.files.item(0);
+
+    this.file.arrayBuffer().then(data => {
+      const rom = new DataView(data);
+      this.memory.loadROM(rom);
+    });
   }
 }

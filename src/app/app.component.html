@@ -1,12 +1,22 @@
 <div>
-  <p>CPU Info:</p>
-  <ul *ngIf="cpuInfo">
-    <li><code>AF: 0x{{cpuInfo.registers.AF.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-    <li><code>BC: 0x{{cpuInfo.registers.BC.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-    <li><code>DE: 0x{{cpuInfo.registers.DE.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-    <li><code>HL: 0x{{cpuInfo.registers.HL.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-    <li><code>SP: 0x{{cpuInfo.registers.SP.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-    <li><code>PC: 0x{{cpuInfo.registers.PC.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-  </ul>
-  <button (click)="cpu.tick()">tick</button>
+  <div style="width: 50%">
+    <p>CPU Info:</p>
+    <ul *ngIf="cpuInfo">
+      <li><code>AF: 0x{{cpuInfo.registers.AF.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+      <li><code>BC: 0x{{cpuInfo.registers.BC.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+      <li><code>DE: 0x{{cpuInfo.registers.DE.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+      <li><code>HL: 0x{{cpuInfo.registers.HL.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+      <li><code>SP: 0x{{cpuInfo.registers.SP.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+      <li><code>PC: 0x{{cpuInfo.registers.PC.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+    </ul>
+  </div>
+  <div style="width: 50%">
+    <p>Memory Info:</p>
+
+  </div>
+  <button mat-raised-button (click)="cpu.tick()">tick</button>
+  <div class="form-group">
+    <label for="file">Choose File</label>
+    <input type="file" id="file" (change)="handleFileInput($event)">
+  </div>
 </div>

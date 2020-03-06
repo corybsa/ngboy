@@ -162,7 +162,7 @@ export class CPU extends Debugger<CpuInfo> {
       const p = y >> 1;
       const q = y % 2;
 
-      console.log(opCode.toString(2).padStart(8, '0'), x, y, z);
+      console.log(`ox${opCode.toString(16).padStart(2, '0')}`, opCode.toString(2).padStart(8, '0'), x, y, z);
 
       if(x === 0x00) {
         switch(z) {
@@ -746,8 +746,7 @@ export class CPU extends Debugger<CpuInfo> {
    * Tick one clock cycle
    */
   public tick(): void {
-    // this.decode(this.memory.getByteAt(this.registers.PC++));
-    this.decode(0x1C);
+    this.decode(this.memory.getByteAt(this.registers.PC++));
 
     this.emit({
       registers: this.registers
