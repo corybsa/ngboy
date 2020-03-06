@@ -1,0 +1,265 @@
+x | y | z
+00 000 000 - nop
+00 000 001 - ld bc xx
+00 000 010 - ld bcp a
+00 000 011 - inc bc
+00 000 100 - inc b
+00 000 101 - dec b
+00 000 110 - ld b x
+00 000 111 - rlca
+00 001 000 - ld xxp sp
+00 001 001 - add hl bc
+00 001 010 - ld a bcp
+00 001 011 - dec bc
+00 001 100 - inc c
+00 001 101 - dec c
+00 001 110 - ld c x
+00 001 111 - rrca
+00 010 000 - stop
+00 010 001 - ld de xx
+00 010 010 - ld dep a
+00 010 011 - inc de
+00 010 100 - inc d
+00 010 101 - dec d
+00 010 110 - ld d x
+00 010 111 - rla
+00 011 000 - jr x
+00 011 001 - add hl de
+00 011 010 - ld a dep
+00 011 011 - dec de
+00 011 100 - inc e
+00 011 101 - dec e
+00 011 110 - ld e x
+00 011 111 - rra
+00 100 000 - jr nz x
+00 100 001 - ld hl xx
+00 100 010 - ldi hlp a
+00 100 011 - inc hl
+00 100 100 - inc h
+00 100 101 - dec h
+00 100 110 - ld h x
+00 100 111 - daa
+00 101 000 - jr z x
+00 101 001 - add hl hl
+00 101 010 - ldi a hlp
+00 101 011 - dec hl
+00 101 100 - inc l
+00 101 101 - dec l
+00 101 110 - ld l x
+00 101 111 - cpl
+00 110 000 - jr nc x
+00 110 001 - ld sp xx
+00 110 010 - ldd hlp a
+00 110 011 - inc sp
+00 110 100 - inc hlp
+00 110 101 - dec hlp
+00 110 110 - ld hlp x
+00 110 111 - scf
+00 111 000 - jr c x
+00 111 001 - add hl sp
+00 111 010 - ldd a hlp
+00 111 011 - dec sp
+00 111 100 - inc a
+00 111 101 - dec a
+00 111 110 - ld a x
+00 111 111 - ccf
+
+
+x | y | z
+01 000 000 - nop
+01 000 001 - ld b c
+01 000 010 - ld b d
+01 000 011 - ld b e
+01 000 100 - ld b h
+01 000 101 - ld b l
+01 000 110 - ld b hlp
+01 000 111 - ld b a
+01 001 000 - ld c b
+01 001 001 - nop
+01 001 010 - ld c d
+01 001 011 - ld c e
+01 001 100 - ld c h
+01 001 101 - ld c l
+01 001 110 - ld c hlp
+01 001 111 - ld c a
+01 010 000 - ld d b
+01 010 001 - ld d c
+01 010 010 - nop
+01 010 011 - ld d e
+01 010 100 - ld d h
+01 010 101 - ld d l
+01 010 110 - ld d hlp
+01 010 111 - ld d a
+01 011 000 - ld e b
+01 011 001 - ld e c
+01 011 010 - ld e d
+01 011 011 - nop
+01 011 100 - ld e h
+01 011 101 - ld e l
+01 011 110 - ld e hlp
+01 011 111 - ld e a
+01 100 000 - ld h b
+01 100 001 - ld h c
+01 100 010 - ld h d
+01 100 011 - ld h e
+01 100 100 - nop
+01 100 101 - ld h l
+01 100 110 - ld h hlp
+01 100 111 - ld h a
+01 101 000 - ld l b
+01 101 001 - ld l c
+01 101 010 - ld l d
+01 101 011 - ld l e
+01 101 100 - ld l h
+01 101 101 - nop
+01 101 110 - ld l hlp
+01 101 111 - ld l a
+01 110 000 - ld hlp b
+01 110 001 - ld hlp c
+01 110 010 - ld hlp d
+01 110 011 - ld hlp e
+01 110 100 - ld hlp h
+01 110 101 - ld hlp l
+01 110 110 - halt
+01 110 111 - ld hlp a
+01 111 000 - ld a b
+01 111 001 - ld a c
+01 111 010 - ld a d
+01 111 011 - ld a e
+01 111 100 - ld a h
+01 111 101 - ld a l
+01 111 110 - ld a hlp
+01 111 111 - nop
+
+
+x | y | z
+10 000 000 - add a b
+10 000 001 - add a c
+10 000 010 - add a d
+10 000 011 - add a e
+10 000 100 - add a h
+10 000 101 - add a l
+10 000 110 - add a hlp
+10 000 111 - add a a
+10 001 000 - adc a b
+10 001 001 - adc a c
+10 001 010 - adc a d
+10 001 011 - adc a e
+10 001 100 - adc a h
+10 001 101 - adc a l
+10 001 110 - adc a hlp
+10 001 111 - adc a a
+10 010 000 - sub b
+10 010 001 - sub c
+10 010 010 - sub d
+10 010 011 - sub e
+10 010 100 - sub h
+10 010 101 - sub l
+10 010 110 - sub hlp
+10 010 111 - sub a
+10 011 000 - sbc a b
+10 011 001 - sbc a c
+10 011 010 - sbc a d
+10 011 011 - sbc a e
+10 011 100 - sbc a h
+10 011 101 - sbc a l
+10 011 110 - sbc a hlp
+10 011 111 - sbc a a
+10 100 000 - and b
+10 100 001 - and c
+10 100 010 - and d
+10 100 011 - and e
+10 100 100 - and h
+10 100 101 - and l
+10 100 110 - and hlp
+10 100 111 - and a
+10 101 000 - xor b
+10 101 001 - xor c
+10 101 010 - xor d
+10 101 011 - xor e
+10 101 100 - xor h
+10 101 101 - xor l
+10 101 110 - xor hlp
+10 101 111 - xor a
+10 110 000 - or b
+10 110 001 - or c
+10 110 010 - or d
+10 110 011 - or e
+10 110 100 - or h
+10 110 101 - or l
+10 110 110 - or hlp
+10 110 111 - or a
+10 111 000 - cp b
+10 111 001 - cp c
+10 111 010 - cp d
+10 111 011 - cp e
+10 111 100 - cp h
+10 111 101 - cp l
+10 111 110 - cp hlp
+10 111 111 - cp a
+
+
+x | y | z
+11 000 000 - ret nz
+11 000 001 - pop bc
+11 000 010 - jp nz xx
+11 000 011 - jp xx
+11 000 100 - call nz xx
+11 000 101 - push bc
+11 000 110 - add a x
+11 000 111 - rst 00
+11 001 000 - ret z
+11 001 001 - ret
+11 001 010 - jp z xx
+11 001 100 - call z xx
+11 001 101 - call xx
+11 001 110 - adc a x
+11 001 111 - rst 08
+11 010 000 - ret nc
+11 010 001 - pop de
+11 010 010 - jp nc xx
+11 010 011 - nop
+11 010 100 - call nc xx
+11 010 101 - push de
+11 010 110 - sub x
+11 010 111 - rst 10
+11 011 000 - ret c
+11 011 001 - reti
+11 011 010 - jp c xx
+11 011 011 - nop
+11 011 100 - call c xx
+11 011 101 - nop
+11 011 110 - sbc a x
+11 011 111 - rst 18
+11 100 000 - ld xp a
+11 100 001 - pop hl
+11 100 010 - ld cp a
+11 100 011 - nop
+11 100 100 - nop
+11 100 101 - push hl
+11 100 110 - and x
+11 100 111 - rst 20
+11 101 000 - add sp x
+11 101 001 - jp hlp
+11 101 010 - ld xxp a
+11 101 011 - nop
+11 101 100 - nop
+11 101 101 - nop
+11 101 110 - xor x
+11 101 111 - rst 28
+11 110 000 - ld a xp
+11 110 001 - pop af
+11 110 010 - ld a cp
+11 110 011 - di
+11 110 100 - nop
+11 110 101 - push af
+11 110 110 - or x
+11 110 111 - rst 30
+11 111 000 - ld hl sp x
+11 111 001 - ld sp hl
+11 111 010 - ld a xxp
+11 111 011 - ei
+11 111 100 - nop
+11 111 101 - nop
+11 111 110 - cp x
+11 111 111 - rst 38
