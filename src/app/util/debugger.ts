@@ -7,7 +7,7 @@ export abstract class Debugger<T> {
     this.debugData = new BehaviorSubject<T>(null);
   }
 
-  protected emit(data): void {
+  protected emit(data: T): void {
     this.debugData.next(data);
   }
 

@@ -1,60 +1,114 @@
 import { Debugger } from '../util/debugger';
 import { MemoryInfo } from '../models/memory-info.model';
+import {Injectable} from '@angular/core';
 
+/**
+ * The GameBoy has 64KB of Memory.
+ *
+ * Notes:
+ *   - Address 0xE000 - 0xFE00 appear to access the internal RAM the same as 0xC000 - 0xDE00.
+ *     i.e. if you write to 0xE000 it will appear at 0xC000 AND 0xE000. Similarly, writing to 0xC000 will appear at 0xC000 AND 0xE000.
+ *
+ *   - Memory regions:
+ *     - 0x0000 - 0x3FFF: ROM (16KB ROM bank #0 (in cartridge))
+ *     - 0x4000 - 0x7FFF: ROM (16KB switchable ROM bank (in cartridge))
+ *                        - I think these can safely be combined for a range of 0x0000 - 0x7FFF
+ *
+ *     - 0x8000 - 0x9FFF: VRAM (8KB Video RAM)
+ *                        - Can only be accessed during LCD modes 0 (HBlank), 1 (VBlank) and 2 (OAM Search)
+ *
+ *     - 0xA000 - 0xBFFF: SRAM (8KB switchable RAM bank)
+ *                        - Most of the time this is used for save data as it's backed up by a battery.
+ *                        - Can be used as extra work RAM.
+ *                        - By default, SRAM is in a locked state, which ignores writes and returns somewhat random values when read.
+ *                        - How SRAM is unlocked depends on the MBC.
+ *
+ *     - 0xC000 - 0xDFFF: WRAM (8KB internal RAM)
+ *                        - This is physically in the GameBoy itself and can be used however the programmer wants.
+ *
+ *     - 0xE000 - 0xFDFF: ERAM (Echo of 8KB Internal RAM)
+ *                        - Basically points to 0xC000 - 0xDE00
+ *                        - It's recommended to avoid relying on this though.
+ *
+ *     - 0xFE00 - 0xFE9F: OAM (Object Attribute Memory or Sprite Attribute Memory)
+ *                        - The area of memory where information about objects is stored.
+ *                        - Locked while the PPU is accessing it.
+ *
+ *     - 0xFEA0 - 0xFEFF: Empty but unusable for I/O
+ *
+ *     - 0xFF00 - 0xFF4B: IO (I/O Ports)
+ *                        - A bunch of hardware registers.
+ *                        - Here is where you can configure graphics, play sound or communicate with another GameBoy.
+ *
+ *     - 0xFF4C - 0xFF7F: Empty but unusable for I/O
+ *
+ *     - 0xFF80 - 0xFFFE: HRAM (Internal RAM or High RAM)
+ *                        - These bytes work just like WRAM, except that they can be accessed slightly faster by a certain instruction.
+ *                        - This is a great place to store temporary variables because of the speed.
+ *
+ *     - 0xFFFF         : IME (Interrupt Master Enable or Interrupt Enable Register)
+ *                        - Special byte of I/O.
+ *                        - It's here because of how the CPU works internally.
+ */
+@Injectable()
 export class Memory extends Debugger<MemoryInfo> {
-  private cartridge: DataView = new DataView(new ArrayBuffer(0x800000));
-  private vram: DataView = new DataView(new ArrayBuffer(0x2000));
-  private sram: DataView = new DataView(new ArrayBuffer(0x8000));
-  private wram: DataView = new DataView(new ArrayBuffer(0x2000));
-  private eram: DataView = new DataView(new ArrayBuffer(0x1E00));
-  private oam: DataView = new DataView(new ArrayBuffer(0xA0));
-  private fea0_feff: DataView = new DataView(new ArrayBuffer(0x60));
-  private io: DataView = new DataView(new ArrayBuffer(0x80));
-  private hram: DataView = new DataView(new ArrayBuffer(0x7F));
-  private ie: DataView = new DataView(new ArrayBuffer(1));
+  private cartridge: number[] = new Array(0x800000).fill(0);
+  private vram: number[] = new Array(0x2000).fill(Math.floor(Math.random() * 256));
+  private sram: number[] = new Array(0x8000).fill(Math.floor(Math.random() * 256));
+  private wram: number[] = new Array(0x2000).fill(Math.floor(Math.random() * 256));
+  private eram: number[] = new Array(0x1E00).fill(Math.floor(Math.random() * 256));
+  private oam: number[] = new Array(0xA0).fill(Math.floor(Math.random() * 256));
+  private fea0_feff: number[] = new Array(0x60).fill(Math.floor(Math.random() * 256));
+  private io: number[] = new Array(0x80).fill(Math.floor(Math.random() * 256));
+  private hram: number[] = new Array(0x7F).fill(Math.floor(Math.random() * 256));
+  private ie: number[] = new Array(1).fill(Math.floor(Math.random() * 256));
 
   private currentRomBank = 1;
   private currentRamBank = 0;
 
   constructor() {
     super();
+
+    this.emit();
   }
 
-  public loadROM(rom: DataView) {
+  public loadROM(rom: number[]) {
     this.cartridge = rom;
-    // this.romBankType = this.getRomBankType(this.cartridge.getUint8(0x147));
+    // this.romBankType = this.getRomBankType(this.cartridge[0x147]);
+
+    this.emit();
   }
 
   public getByteAt(address: number): number {
     let addr;
 
     if(address <= 0x3FFF) {
-      return this.cartridge.getUint8(address);
+      return this.cartridge[address];
     } else if(address <= 0x7FFF) {
       addr = (address - 0x4000) + (this.currentRomBank * 0x4000);
-      return this.cartridge.getUint8(addr);
+      return this.cartridge[addr];
     } else if(address <= 0x9FFF) {
       addr = (0x1FFF - (0x9FFF - address)) & 0xFFFF;
-      return this.vram.getUint8(addr);
+      return this.vram[addr];
     } else if(address <= 0xBFFF) {
       addr = (0x1FFF - (0xBFFF - address)) & 0xFFFF;
       addr += (this.currentRamBank * 0x2000);
-      return this.sram.getUint8(addr);
+      return this.sram[addr];
     } else if(address <= 0xDFFF) {
       addr = (0x1FFF - (0xDFFF - address)) & 0xFFFF;
-      return this.wram.getUint8(addr);
+      return this.wram[addr];
     } else if(address <= 0xFDFF) {
       addr = (0x1DFF - (0xFDFF - address)) & 0xFFFF;
-      return this.eram.getUint8(addr);
+      return this.eram[addr];
     } else if(address <= 0xFE9F) {
       addr = (0x9F - (0xFE9F - address)) & 0xFFFF;
-      return this.oam.getUint8(addr);
+      return this.oam[addr];
     } else if(address <= 0xFEFF) {
       // Reading from this area on DMG always returns 0.
       return 0x00;
 
       /*addr = (0x5F - (0xFEFF - address)) & 0xFFFF;
-      return this.fea0_feff.getUint8(addr);*/
+      return this.fea0_feff[addr];*/
     } else if(address <= 0xFF7F) {
       addr = (0x4B - (0xFF4B - address)) & 0xFFFF;
 
@@ -63,68 +117,68 @@ export class Memory extends Debugger<MemoryInfo> {
 
         // When LCD is off bits 0 through 2 return 0
         if((lcdc & 0x80) != 0x80) {
-          return (0x80 | this.io.getUint8(addr)) & 0xF8;
+          return (0x80 | this.io[(addr)) & 0xF8];
         } else {
-          return (0x80 | this.io.getUint8(addr));
+          return (0x80 | this.io[(addr))];
         }
       }
 
       // the upper 2 bits of the P1 always return 1
       if(address == IORegisters.JOYPAD) {
-        return (0xC0 | this.io.getUint8(addr));
+        return (0xC0 | this.io[(addr))];
       }
 
       // bits 1 through 6 of SIO return 1
       if(address == IORegisters.SERIAL_TRANSFER_CONTROL) {
-        return (0x7E | this.io.getUint8(addr));
+        return (0x7E | this.io[(addr))];
       }
 
       // the upper 5 bits of TAC always return 1
       if(address == IORegisters.TAC) {
-        return (0xF8 | this.io.getUint8(addr));
+        return (0xF8 | this.io[(addr))];
       }
 
       // the upper 3 bits of IF always return 1
       if(address == IORegisters.INTERRUPT_FLAGS) {
-        return (0xE0 | this.io.getUint8(addr));
+        return (0xE0 | this.io[(addr))];
       }
 
       // the 7th bit of nr10 always returns 1
       if(address == IORegisters.SOUND1_SWEEP) {
-        return (0x80 | this.io.getUint8(addr));
+        return (0x80 | this.io[(addr))];
       }
 
       // bits 0 though 6 of nr30 always return 1
       if(address == IORegisters.SOUND3_ENABLE) {
-        return (0x7F | this.io.getUint8(addr));
+        return (0x7F | this.io[(addr))];
       }
 
       // bits 0 through 4 and bit 7 of nr32 always return 1
       if(address == IORegisters.SOUND3_OUTPUT_LEVEL) {
-        return (0x9F | this.io.getUint8(addr));
+        return (0x9F | this.io[(addr))];
       }
 
       // bits 6 and 7 of nr41 always return 1
       if(address == IORegisters.SOUND4_LENGTH) {
-        return (0xC0 | this.io.getUint8(addr));
+        return (0xC0 | this.io[(addr))];
       }
 
       // bits 0 through 5 of nr44 always return 1
       if(address == IORegisters.SOUND4_INITIAL) {
-        return (0x3F | this.io.getUint8(addr));
+        return (0x3F | this.io[(addr))];
       }
 
       // bits 4 through 6 of nr52 always return 1
       if(address == IORegisters.SOUND_ENABLE) {
-        return (0x70 | this.io.getUint8(addr));
+        return (0x70 | this.io[(addr))];
       }*/
 
-      return this.io.getUint8(addr);
+      return this.io[addr];
     } else if(address <= 0xFFFE) {
       addr = (0x7E - (0xFFFE - address)) & 0xFFFF;
-      return this.hram.getUint8(addr);
+      return this.hram[addr];
     } else {
-      return this.ie.getUint8(0);
+      return this.ie[0];
     }
   }
 
@@ -137,7 +191,7 @@ export class Memory extends Debugger<MemoryInfo> {
       // this.switchBank(address, value);
     } else if(address <= 0x9FFF) {
       addr = (0x1FFF - (0x9FFF - address)) & 0xFFFF;
-      this.vram.setUint8(addr, value);
+      this.vram[addr] = value;
     } else if(address <= 0xBFFF) {
       addr = (0x1FFF - (0xBFFF - address)) & 0xFFFF;
 
@@ -145,31 +199,31 @@ export class Memory extends Debugger<MemoryInfo> {
         addr = (addr - 0x1FFF) + (this.currentRamBank * 0x2000);
       }*/
 
-      this.sram.setUint8(addr, value);
+      this.sram[addr] = value;
     } else if(address <= 0xDFFF) {
       addr = (0x1FFF - (0xDFFF - address)) & 0xFFFF;
-      this.wram.setUint8(addr, value);
+      this.wram[addr] = value;
 
       // Writes to this area are copied to eram
       if(addr < 0x1E00) {
-        this.eram.setUint8(addr, value);
+        this.eram[addr] = value;
       }
     } else if(address <= 0xFDFF) {
       addr = (0x1DFF - (0xFDFF - address)) & 0xFFFF;
 
       // Writes to this area are redirected to 0xC000 through 0xDDFF (wram)
-      this.eram.setUint8(addr, value);
-      this.wram.setUint8(addr, value);
+      this.eram[addr] = value;
+      this.wram[addr] = value;
     } else if(address <= 0xFE9F) {
       addr = (0x9F - (0xFE9F - address)) & 0xFFFF;
-      this.oam.setUint8(addr, value);
+      this.oam[addr] = value;
     } else if(address <= 0xFEFF) {
       // writes are ignored on the GameBoy.
       /*addr = (0x5F - (0xFEFF - address)) & 0xFFFF;
-      this.fea0_feff.setUint8(addr, value);*/
+      this.fea0_feff[addr] = value;*/
     } else if(address <= 0xFF7F) {
       addr = (0x4B - (0xFF4B - address)) & 0xFFFF;
-      this.io.setUint8(addr, value);
+      this.io[addr] = value;
 
       /*if(address == IORegisters.DIVIDER) {
         int targetBit = this.getTimerSystemBit();
@@ -180,7 +234,7 @@ export class Memory extends Debugger<MemoryInfo> {
         }
 
         Timers.systemCounter = 0;
-        this.iosetUint8(addr, 0);
+        this.i[addr] = 0;
         return;
       }
 
@@ -194,7 +248,7 @@ export class Memory extends Debugger<MemoryInfo> {
           Timers.isTimaChanged = true;
         }
 
-        this.io.setUint8addr, value;
+        this.io[addr] = value;
       }
 
       if(address == IORegisters.TAC) {
@@ -229,9 +283,9 @@ export class Memory extends Debugger<MemoryInfo> {
           Timers.flagValue = (value & Interrupts.TIMER) >> 2;
         }
 
-        this.io.setUint8(addr, 0xE0 | value);
+        this.io[addr] = 0xE0| value);
       } else {
-        this.io.setUint8(addr, value);
+        this.io[addr] = value;
       }*/
 
       // TODO: (in bgb) something weird is happening when a value is written to IORegisters.LCDC.
@@ -242,12 +296,16 @@ export class Memory extends Debugger<MemoryInfo> {
       }*/
     } else if(address <= 0xFFFE) {
       addr = (0x7E - (0xFFFE - address)) & 0xFFFF;
-      this.hram.setUint8(addr, value);
+      this.hram[addr] = value;
     } else {
-      this.ie.setUint8(0, value);
+      this.ie[0] = value;
     }
 
-    this.emit({
+    this.emit();
+  }
+
+  protected emit() {
+    super.emit({
       cartridge: this.cartridge,
       vram: this.vram,
       sram: this.sram,

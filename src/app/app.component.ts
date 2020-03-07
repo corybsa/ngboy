@@ -1,9 +1,8 @@
-import { Component, OnDestroy } from '@angular/core';
-import { CPU } from './system/cpu';
+import {Component, Inject, OnDestroy} from '@angular/core';
 import { Subscription } from 'rxjs';
-import { CpuInfo } from './models/cpu-info.model';
-import { Memory } from './system/memory';
-import { MemoryInfo } from './models/memory-info.model';
+import {GameBoy} from './system/game-boy';
+import {CPU} from './system/cpu';
+import {Memory} from './system/memory';
 
 @Component({
   selector: 'app-root',
@@ -11,28 +10,18 @@ import { MemoryInfo } from './models/memory-info.model';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnDestroy {
-  subscriptions: Subscription[] = [];
   title = 'NgBoy';
-  cpu: CPU;
-  memory: Memory;
+
   file: any = null;
 
-  cpuInfo: CpuInfo;
-  memoryInfo: MemoryInfo;
-
-  constructor() {
-    this.memory = new Memory();
-    this.cpu = new CPU(this.memory);
-
-    const cpuObserver = this.cpu.subscribe();
-    const memObserver = this.memory.subscribe();
-
-    cpuObserver.subscribe(res => this.cpuInfo = res);
-    memObserver.subscribe(res => this.memoryInfo = res);
+  constructor(
+    private gameBoy: GameBoy
+  ) {
+    console.log(this.gameBoy);
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.gameBoy.powerOff();
   }
 
   handleFileInput($event) {
@@ -40,7 +29,14 @@ export class AppComponent implements OnDestroy {
 
     this.file.arrayBuffer().then(data => {
       const rom = new DataView(data);
-      this.memory.loadROM(rom);
+      const parsedRom = [];
+      const len = rom.byteLength - 1;
+
+      for(let i = 0; i < len; i++) {
+        parsedRom[i] = rom.getUint8(i);
+      }
+
+      this.gameBoy.insertCartridge(parsedRom);
     });
   }
 }

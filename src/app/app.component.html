@@ -1,30 +1,36 @@
-<div style="width: 144px; height: 160px;">
-  LCD goes here!
-</div>
-<mat-grid-list [cols]="2" [rowHeight]="500">
-  <mat-grid-tile>
-    <p style="display: block;">CPU Info</p>
-    <ul *ngIf="cpuInfo">
-      <li><code>AF: 0x{{cpuInfo.registers.AF.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-      <li><code>BC: 0x{{cpuInfo.registers.BC.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-      <li><code>DE: 0x{{cpuInfo.registers.DE.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-      <li><code>HL: 0x{{cpuInfo.registers.HL.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-      <li><code>SP: 0x{{cpuInfo.registers.SP.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-      <li><code>PC: 0x{{cpuInfo.registers.PC.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
-    </ul>
-  </mat-grid-tile>
-  <mat-grid-tile>
-    <p style="display: block;">Memory Info</p>
-    <ul *ngIf="memoryInfo">
-      <li>coming soon!</li>
-    </ul>
-  </mat-grid-tile>
-</mat-grid-list>
+<div style="padding: 10px;">
+  <div style="width: 144px; height: 160px;">
+    LCD goes here!
+  </div>
+  <mat-card style="width: calc(50% - 52px); display: inline-block;">
+    <mat-card-header>CPU Info</mat-card-header>
+    <mat-card-content>
+      <ul>
+        <li><code>AF: 0x{{gameBoy.getCpuInfo().registers.AF.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+        <li><code>BC: 0x{{gameBoy.getCpuInfo().registers.BC.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+        <li><code>DE: 0x{{gameBoy.getCpuInfo().registers.DE.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+        <li><code>HL: 0x{{gameBoy.getCpuInfo().registers.HL.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+        <li><code>SP: 0x{{gameBoy.getCpuInfo().registers.SP.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+        <li><code>PC: 0x{{gameBoy.getCpuInfo().registers.PC.toString(16).toUpperCase().padStart(4, '0')}}</code></li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+  <mat-card style="width: calc(50% - 52px); display: inline-block;">
+    <mat-card-header>Memory Info</mat-card-header>
+    <mat-card-content style="height: 200px; overflow: auto;">
+      <ul>
+        <!--<li *ngFor="let item of gameBoy.getMemoryInfo().all; let i = index">
+          <code>{{i}} - {{item}}</code>
+        </li>-->
+      </ul>
+    </mat-card-content>
+  </mat-card>
 
-<div>
-  <button mat-raised-button (click)="cpu.tick()">tick</button>
-  <div class="form-group">
-    <label for="file">Choose File</label>
-    <input type="file" id="file" (change)="handleFileInput($event)">
+  <div style="margin-top: 10px;">
+    <button mat-raised-button (click)="gameBoy.tick()">tick</button>
+    <div class="form-group">
+      <label for="file">Choose ROM</label><br>
+      <input type="file" id="file" (change)="handleFileInput($event)">
+    </div>
   </div>
 </div>
