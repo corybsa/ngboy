@@ -9,4 +9,5 @@ export interface MemoryInfo {
   io: number[];
   hram: number[];
   ie: number[];
+  watch: number[];
 }

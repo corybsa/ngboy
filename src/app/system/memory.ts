@@ -1,6 +1,6 @@
 import { Debugger } from '../util/debugger';
 import { MemoryInfo } from '../models/memory-info.model';
-import {Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 
 /**
  * The GameBoy has 64KB of Memory.
@@ -62,6 +62,7 @@ export class Memory extends Debugger<MemoryInfo> {
   private io: number[] = new Array(0x80).fill(Math.floor(Math.random() * 256));
   private hram: number[] = new Array(0x7F).fill(Math.floor(Math.random() * 256));
   private ie: number[] = new Array(1).fill(Math.floor(Math.random() * 256));
+  private watch: number[] = [];
 
   private currentRomBank = 1;
   private currentRamBank = 0;
@@ -182,7 +183,7 @@ export class Memory extends Debugger<MemoryInfo> {
     }
   }
 
-  setByteAt(address: number, value: number) {
+  public setByteAt(address: number, value: number) {
     let addr;
 
     // TODO: restrict access to VRAM and OAM when necessary
@@ -304,6 +305,19 @@ export class Memory extends Debugger<MemoryInfo> {
     this.emit();
   }
 
+  public addWatch(address: number) {
+    const index = this.watch.findIndex(item => item === address);
+
+    if(index === -1) {
+      this.watch.push(address);
+    }
+  }
+
+  public removeWatch(address: number) {
+    const index = this.watch.findIndex(item => item === address);
+    this.watch.splice(index, 1);
+  }
+
   protected emit() {
     super.emit({
       cartridge: this.cartridge,
@@ -315,7 +329,8 @@ export class Memory extends Debugger<MemoryInfo> {
       fea0_feff: this.fea0_feff,
       io: this.io,
       hram: this.hram,
-      ie: this.ie
+      ie: this.ie,
+      watch: this.watch
     });
   }
 }

@@ -2,7 +2,7 @@ import { Debugger } from '../util/debugger';
 import { CpuInfo } from '../models/cpu-info.model';
 import { Registers } from './registers';
 import { Memory } from './memory';
-import { Injectable} from '@angular/core';
+import { Injectable } from '@angular/core';
 import { IORegisters } from '../util/io-registers';
 
 /**

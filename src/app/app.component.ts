@@ -1,8 +1,5 @@
-import {Component, Inject, OnDestroy} from '@angular/core';
-import { Subscription } from 'rxjs';
-import {GameBoy} from './system/game-boy';
-import {CPU} from './system/cpu';
-import {Memory} from './system/memory';
+import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { GameBoy } from './system/game-boy';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +10,8 @@ export class AppComponent implements OnDestroy {
   title = 'NgBoy';
 
   file: any = null;
+
+  @ViewChild('addWatchInput', { static: false }) addWatchInput: ElementRef;
 
   constructor(
     private gameBoy: GameBoy
@@ -38,5 +37,10 @@ export class AppComponent implements OnDestroy {
 
       this.gameBoy.insertCartridge(parsedRom);
     });
+  }
+
+  addWatch(value: string) {
+    this.gameBoy.addMemoryWatch(value);
+    this.addWatchInput.nativeElement.value = '';
   }
 }

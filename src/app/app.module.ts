@@ -3,7 +3,14 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { MatButtonModule, MatCardModule, MatGridListModule, MatInputModule } from '@angular/material';
+import {
+  MatButtonModule,
+  MatCardModule,
+  MatGridListModule,
+  MatIconModule,
+  MatInputModule, MatSlideToggleModule,
+  MatTableModule
+} from '@angular/material';
 import {CPU} from './system/cpu';
 import {Memory} from './system/memory';
 import {GameBoy} from './system/game-boy';
@@ -18,7 +25,10 @@ import {GameBoy} from './system/game-boy';
     MatButtonModule,
     MatInputModule,
     MatCardModule,
-    MatGridListModule
+    MatGridListModule,
+    MatTableModule,
+    MatIconModule,
+    MatSlideToggleModule
   ],
   providers: [
     CPU,
