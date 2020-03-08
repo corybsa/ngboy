@@ -2,6 +2,10 @@
   padding: 10px;
 }
 
+mat-slide-toggle {
+  display: block;
+}
+
 mat-card {
   width: calc(50% - 52px);
   display: inline-block;

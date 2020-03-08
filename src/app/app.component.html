@@ -4,14 +4,14 @@
     LCD goes here!
   </div>
 
-  <mat-slide-toggle [checked]="gameBoy.debuggerEnabled" (change)="gameBoy.toggleDebugger()">Debugger</mat-slide-toggle>
-
   <div id="rom-picker">
     <label class="rom-label">
       <input type="file" required (change)="handleFileInput($event)">
       <span>Load ROM</span>
     </label>
   </div>
+
+  <mat-slide-toggle [checked]="gameBoy.debuggerEnabled" (change)="gameBoy.toggleDebugger()">Debugger</mat-slide-toggle>
 
   <mat-card id="cpu-info" *ngIf="gameBoy.debuggerEnabled">
     <mat-card-header>CPU Info</mat-card-header>
