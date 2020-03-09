@@ -14,7 +14,7 @@ export class GameBoy {
 
   public debuggerEnabled = true;
 
-  constructor(@Inject(CPU) private cpu: CPU, @Inject(Memory) private memory: Memory) {
+  constructor(private cpu: CPU, private memory: Memory) {
     const cpuObserver = this.cpu.subscribe();
     const memObserver = this.memory.subscribe();
 

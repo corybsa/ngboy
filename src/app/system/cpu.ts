@@ -84,9 +84,9 @@ export class CPU extends Debugger<CpuInfo> {
   };
 
   private registers = new Registers();
-  // private readonly instructions: Instructions;
-
-  // private memory: Memory;
+  private cycles = 0;
+  private haltBug = false;
+  private isStopped = false;
 
   constructor(private memory: Memory) {
     super();
@@ -228,99 +228,212 @@ export class CPU extends Debugger<CpuInfo> {
       const p = y >> 1;
       const q = y % 2;
 
-      console.log(`ox${opCode.toString(16).padStart(2, '0')}`, opCode.toString(2).padStart(8, '0'), x, y, z);
+      console.log(`0x${opCode.toString(16).toUpperCase().padStart(2, '0')}`, opCode.toString(2).padStart(8, '0'), x, y, z);
 
-      if(x === 0x00) {
-        switch(z) {
-          case 0b000: // Relative jumps and assorted ops
-            break;
-          case 0b001: // 16-bit load immediate/add
-            break;
-          case 0b010: // Indirect loading
-            break;
-          case 0b011: // 16-bit inc/dec
-            if(q === 0) { // increment
-              this.registers[this.getRegisterName(z)] = ((this.registers[this.getRegisterName(z)] + 1) & 0xFFFF);
-            } else { // decrement
-              this.registers[this.getRegisterName(z)] = ((this.registers[this.getRegisterName(z)] - 1) & 0xFFFF);
-            }
-            break;
-          case 0b100: // 8-bit INC
-            if(y === 0b110) {
-              const value = this.increment(this.memory.getByteAt(this.registers.HL));
-              this.memory.setByteAt(this.registers.HL, value);
-            } else {
-              const r = this.getRegisterName(y);
-              this.registers[r] = this.increment(this.registers[r]);
-            }
-            break;
-          case 0b101: // 8-bit DEC
-            if(y === 0b110) {
-              const value = this.decrement(this.memory.getByteAt(this.registers.HL));
-              this.memory.setByteAt(this.registers.HL, value);
-            } else {
-              const r = this.getRegisterName(y);
-              this.registers[r] = this.decrement(this.registers[r]);
-            }
-            break;
-          case 0b110: // ld [b,c,d,e,h,l,a] x
-            this.registers[this.getRegisterName(y)] = this.memory.getByteAt(this.registers.PC);
-            break;
-          case 0b111: // Assorted operations on accumulator/flags
-            this.doMath(y);
-            break;
-        }
-      } else if(x === 0b01) {
-        if(y === 0b110 && z === 0b110) {
-          // this.halt();
-        } else if(y === z) {
-          // nop
-        } else {
-          if(z === 0b110) {
-            // ld [b,c,d,e,h,l] (hl)
-            this.registers[this.getRegisterName(y)] = this.memory.getByteAt(this.registers.HL);
-          } else if(y === 0b110) {
-            // ld (hl) [b,c,d,e,h,l]
-            this.memory.setByteAt(this.registers.HL, this.registers[this.getRegisterName(z)]);
-          } else {
-            // ld [b,c,d,e,h,l,a] [b,c,d,e,h,l,a]
-            this.registers[this.getRegisterName(y)] = this.registers[this.getRegisterName(z)];
-          }
-        }
-      } else if(x === 0b10) {
-        switch(y) {
-          case 0b000: // add
-            this.registers.A = this.add8Bit(this.registers.A, this.registers[this.getRegisterName(z)]);
-            break;
-          case 0b001: // adc
-            this.registers.A = this.adc(this.registers.A, this.registers[this.getRegisterName(z)]);
-            break;
-          case 0b010: // sub
-            this.registers.A = this.sub(this.registers[this.getRegisterName(z)]);
-            break;
-          case 0b011: // sbc
-            this.registers.A = this.sbc(this.registers[this.getRegisterName(z)]);
-            break;
-          case 0b100: // and
-            this.and(this.registers[this.getRegisterName(z)]);
-            break;
-          case 0b101: // xor
-            this.xor(this.registers[this.getRegisterName(z)]);
-            break;
-          case 0b110: // or
-            this.or(this.registers[this.getRegisterName(z)]);
-            break;
-          case 0b111: // cp
-            this.cp(this.registers[this.getRegisterName(z)]);
-            break;
-        }
-      } else if(x === 0b11) {
-
+      switch(x) {
+        case 0b00:
+          this.thisNeedsANewName(y, z, q, p);
+          break;
+        case 0b01:
+          this.doLoadOperation(y, z);
+          break;
+        case 0b10:
+          this.doMathOperation(y, z);
+          break;
+        case 0b11:
+          // TODO: implement this
+          console.log('not implemented');
+          break;
       }
     }
   }
 
-  private doMath(y: number) {
+  // TODO: make sure these are right...
+  // TODO: rename this
+  private thisNeedsANewName(y: number, z: number, q: number, p: number) {
+    switch(z) {
+      case 0b000: // Relative jumps and assorted ops
+        switch(y) {
+          case 0b000:
+            // nop
+            this.incrementCycles(4);
+            break;
+          case 0b001: // ld (xx) sp
+            const op1 = this.memory.getByteAt(this.registers.PC + 1);
+            const op2 = this.memory.getByteAt(this.registers.PC);
+            this.memory.setByteAt(this.combineBytes(op1, op2), this.registers.SP);
+            this.incrementCycles(20);
+            this.incrementPC(2);
+            break;
+          case 0b010:
+            this.stop();
+            this.incrementCycles(4);
+            this.incrementPC(1);
+            break;
+          case 0b011:
+            // 00 011 000 - jr x
+            this.incrementPC(this.memory.getByteAt(this.registers.PC));
+            this.incrementCycles(12);
+            this.incrementPC(1);
+            break;
+          case 0b100:
+            // 00 100 000 - jr nz x
+            if((this.registers.F & CPU.FLAGS.ZERO) !== CPU.FLAGS.ZERO) {
+              this.jumpRelative();
+              this.incrementCycles(12);
+            } else {
+              this.incrementCycles(8);
+            }
+
+            this.incrementPC(1);
+            break;
+          case 0b101:
+            // 00 101 000 - jr z x
+            if((this.registers.F & CPU.FLAGS.ZERO) === CPU.FLAGS.ZERO) {
+              this.jumpRelative();
+              this.incrementCycles(12);
+            } else {
+              this.incrementCycles(8);
+            }
+
+            this.incrementPC(1);
+            break;
+          case 0b110:
+            // 00 110 000 - jr nc x
+            if((this.registers.F & CPU.FLAGS.CARRY) !== CPU.FLAGS.CARRY) {
+              this.jumpRelative();
+              this.incrementCycles(12);
+            } else {
+              this.incrementCycles(8);
+            }
+
+            this.incrementPC(1);
+            break;
+          case 0b111:
+            // 00 111 000 - jr c x
+            if((this.registers.F & CPU.FLAGS.CARRY) === CPU.FLAGS.CARRY) {
+              this.jumpRelative();
+              this.incrementCycles(12);
+            } else {
+              this.incrementCycles(8);
+            }
+
+            this.incrementPC(1);
+            break;
+        }
+        break;
+      case 0b001: // 16-bit load immediate/add
+        // TODO: implement this
+        if(q === 0) {
+
+        } else if(q === 1) {
+
+        }
+        console.log('not implemented');
+        break;
+      case 0b010: // Indirect loading
+        // TODO: implement this
+        if(q === 0) {
+          switch(p) {
+            case 0b00:
+              // ld (bc), a
+              break;
+            case 0b01:
+              // ld (de), a
+              break;
+            case 0b10:
+              // ld (xx), hl
+              break;
+            case 0b11:
+              // ld (xx), a
+              break;
+          }
+        } else if(q === 1) {
+          switch(p) {
+            case 0b00:
+              // ld a, (bc)
+              break;
+            case 0b01:
+              // ld a, (de)
+              break;
+            case 0b10:
+              // ld hl, (xx)
+              break;
+            case 0b11:
+              // ld a, (xx)
+              break;
+          }
+        }
+
+        console.log('not implemented');
+        break;
+      case 0b011: // 16-bit inc/dec
+        if(q === 0) { // increment
+          this.registers[this.getRegisterName(z)] = ((this.registers[this.getRegisterName(z)] + 1) & 0xFFFF);
+        } else if(q === 1) { // decrement
+          this.registers[this.getRegisterName(z)] = ((this.registers[this.getRegisterName(z)] - 1) & 0xFFFF);
+        }
+
+        this.incrementCycles(8);
+        break;
+      case 0b100: // 8-bit INC
+        if(y === 0b110) {
+          const value = this.increment(this.memory.getByteAt(this.registers.HL));
+          this.memory.setByteAt(this.registers.HL, value);
+        } else {
+          const r = this.getRegisterName(y);
+          this.registers[r] = this.increment(this.registers[r]);
+        }
+
+        this.incrementCycles(4);
+        break;
+      case 0b101: // 8-bit DEC
+        if(y === 0b110) {
+          const value = this.decrement(this.memory.getByteAt(this.registers.HL));
+          this.memory.setByteAt(this.registers.HL, value);
+        } else {
+          const r = this.getRegisterName(y);
+          this.registers[r] = this.decrement(this.registers[r]);
+        }
+
+        this.incrementCycles(4);
+        break;
+      case 0b110: // ld [b,c,d,e,h,l,a] x
+        this.registers[this.getRegisterName(y)] = this.memory.getByteAt(this.registers.PC);
+        this.incrementCycles(4);
+        break;
+      case 0b111: // Assorted operations on accumulator/flags
+        this.doLogicOperation(y);
+        this.incrementCycles(4);
+        break;
+    }
+  }
+
+  private doLoadOperation(y: number, z: number) {
+    if(y === 0b110 && z === 0b110) {
+      this.halt();
+      this.incrementCycles(4);
+    } else if(y === z) {
+      // nop
+      this.incrementCycles(4);
+    } else {
+      if(z === 0b110) {
+        // ld [b,c,d,e,h,l] (hl)
+        this.registers[this.getRegisterName(y)] = this.memory.getByteAt(this.registers.HL);
+        this.incrementCycles(8);
+      } else if(y === 0b110) {
+        // ld (hl) [b,c,d,e,h,l]
+        this.memory.setByteAt(this.registers.HL, this.registers[this.getRegisterName(z)]);
+        this.incrementCycles(8);
+      } else {
+        // ld [b,c,d,e,h,l,a] [b,c,d,e,h,l,a]
+        this.registers[this.getRegisterName(y)] = this.registers[this.getRegisterName(z)];
+        this.incrementCycles(4);
+      }
+    }
+  }
+
+  private doLogicOperation(y: number) {
     switch(y) {
       case 0b000:
         this.rlca();
@@ -346,6 +459,93 @@ export class CPU extends Debugger<CpuInfo> {
       case 0b111:
         this.ccf();
         break;
+    }
+  }
+
+  private doMathOperation(y: number, z: number) {
+    switch(y) {
+      case 0b000: // add
+        if(z !== 0b110) {
+          this.registers.A = this.add8Bit(this.registers.A, this.registers[this.getRegisterName(z)]);
+          this.incrementCycles(4);
+        } else {
+          this.registers.A = this.add8Bit(this.registers.A, this.memory.getByteAt(this.registers.HL));
+          this.incrementCycles(8);
+        }
+        break;
+      case 0b001: // adc
+        if(z !== 0b110) {
+          this.registers.A = this.adc(this.registers.A, this.registers[this.getRegisterName(z)]);
+          this.incrementCycles(4);
+        } else {
+          this.registers.A = this.adc(this.registers.A, this.memory.getByteAt(this.registers.HL));
+          this.incrementCycles(8);
+        }
+        break;
+      case 0b010: // sub
+        if(z !== 0b110) {
+          this.registers.A = this.sub(this.registers[this.getRegisterName(z)]);
+          this.incrementCycles(4);
+        } else {
+          this.registers.A = this.sub(this.memory.getByteAt(this.registers.HL));
+          this.incrementCycles(8);
+        }
+        break;
+      case 0b011: // sbc
+        if(z !== 0b110) {
+          this.registers.A = this.sbc(this.registers[this.getRegisterName(z)]);
+          this.incrementCycles(4);
+        } else {
+          this.registers.A = this.sbc(this.memory.getByteAt(this.registers.HL));
+          this.incrementCycles(8);
+        }
+        break;
+      case 0b100: // and
+        if(z !== 0b110) {
+          this.and(this.registers[this.getRegisterName(z)]);
+          this.incrementCycles(4);
+        } else {
+          this.and(this.memory.getByteAt(this.registers.HL));
+          this.incrementCycles(8);
+        }
+        break;
+      case 0b101: // xor
+        if(z !== 0b110) {
+          this.xor(this.registers[this.getRegisterName(z)]);
+          this.incrementCycles(4);
+        } else {
+          this.xor(this.memory.getByteAt(this.registers.HL));
+          this.incrementCycles(8);
+        }
+        break;
+      case 0b110: // or
+        if(z !== 0b110) {
+          this.or(this.registers[this.getRegisterName(z)]);
+          this.incrementCycles(4);
+        } else {
+          this.or(this.memory.getByteAt(this.registers.HL));
+          this.incrementCycles(8);
+        }
+        break;
+      case 0b111: // cp
+        if(z !== 0b110) {
+          this.cp(this.registers[this.getRegisterName(z)]);
+          this.incrementCycles(4);
+        } else {
+          this.cp(this.memory.getByteAt(this.registers.HL));
+          this.incrementCycles(8);
+        }
+        break;
+    }
+  }
+
+  private jumpRelative() {
+    const op = this.memory.getByteAt(this.registers.PC);
+
+    if(op <= 127) {
+      this.incrementPC(op);
+    } else {
+      this.incrementPC((256 - op) * -1);
     }
   }
 
@@ -806,6 +1006,39 @@ export class CPU extends Debugger<CpuInfo> {
     }
 
     this.setFlags(CPU.FLAGS.SUB);
+  }
+
+  /**
+   * OP code 0x10 - Enter CPU very low power mode.
+   * - Execution of a STOP instruction stops both the system clock and oscillator circuit.
+   * - STOP mode is entered, and the LCD controller also stops.
+   * - However, the status of internal RAM register ports remains unchanged.
+   * - STOP mode can be canceled by a reset signal.
+   * - If the RESET terminal goes LOW in STOP mode, it becomes that of a normal reset status.
+   * - The following conditions should be met before a STOP instruction is executed and STOP mode is entered:
+   *   > All interrupt-enable (IE) flags are reset.
+   *   > Input to P10 - P13 is LOW for all.
+   */
+  private stop() {
+    this.isStopped = true;
+    // this.memory.setByteAt(IORegisters.INTERRUPT_ENABLE, 0x00);
+    // TODO: set P10 - P13 low
+  }
+
+  // TODO: implement this
+  private halt() {
+
+  }
+
+  private incrementPC(n: number) {
+    if(!this.haltBug) {
+      this.registers.PC += n;
+    }
+  }
+
+  private incrementCycles(n: number) {
+    this.cycles += n;
+    // this.cyclesSinceLastSync += n;
   }
 
   protected emit() {
