@@ -3,7 +3,7 @@ import { Memory } from './memory';
 import { Subscription } from 'rxjs';
 import { CpuInfo } from '../models/cpu-info.model';
 import { MemoryInfo } from '../models/memory-info.model';
-import { Inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 @Injectable()
 export class GameBoy {
@@ -12,7 +12,7 @@ export class GameBoy {
   private cpuInfo: CpuInfo;
   private memoryInfo: MemoryInfo;
 
-  public debuggerEnabled = true;
+  public debuggerEnabled = false;
 
   constructor(private cpu: CPU, private memory: Memory) {
     const cpuObserver = this.cpu.subscribe();
@@ -39,6 +39,8 @@ export class GameBoy {
 
   public toggleDebugger() {
     this.debuggerEnabled = !this.debuggerEnabled;
+    this.cpu.setDebuggerEnabled(this.debuggerEnabled);
+    this.memory.setDebuggerEnabled(this.debuggerEnabled);
   }
 
   public getCpuInfo(): CpuInfo {

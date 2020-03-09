@@ -16,6 +16,7 @@ export class AppComponent implements OnDestroy {
   constructor(
     private gameBoy: GameBoy
   ) {
+    this.gameBoy.toggleDebugger();
     console.log(this.gameBoy);
   }
 
