@@ -461,50 +461,45 @@ export class CPU extends Debugger<CpuInfo> {
         if(q === 0) {
           // ld [BC, DE, HL, SP], xx
           this.registers[register] = this.getNextWord();
+          this.incrementCycles(12);
+          this.incrementPC(2);
         } else if(q === 1) {
           // add HL [BC, DE, HL, SP]
           this.registers.HL = this.add16Bit(this.registers.HL, this.registers[register]);
+          this.incrementCycles(8);
         }
         break;
       case 0b010: // Indirect loading
         if(q === 0) {
           switch(p) {
-            case 0b00:
-              // ld (bc) a
+            case 0b00: // ld (bc) a
               this.memory.setByteAt(this.registers.BC, this.registers.A);
               break;
-            case 0b01:
-              // ld (de) a
+            case 0b01: // ld (de) a
               this.memory.setByteAt(this.registers.DE, this.registers.A);
               break;
-            case 0b10:
-              // ld (hl+), a
+            case 0b10: // ld (hl+) a
               this.memory.setByteAt(this.registers.HL, this.registers.A);
               this.registers.HL++;
               break;
-            case 0b11:
-              // ld (hl-), a
+            case 0b11: // ld (hl-) a
               this.memory.setByteAt(this.registers.HL, this.registers.A);
               this.registers.HL--;
               break;
           }
         } else if(q === 1) {
           switch(p) {
-            case 0b00:
-              // ld a, (bc)
+            case 0b00: // ld a (bc)
               this.registers.A = this.memory.getByteAt(this.registers.BC);
               break;
-            case 0b01:
-              // ld a, (de)
+            case 0b01: // ld a (de)
               this.registers.A = this.memory.getByteAt(this.registers.DE);
               break;
-            case 0b10:
-              // ld a, (hl+)
+            case 0b10: // ld a (hl+)
               this.registers.A = this.memory.getByteAt(this.registers.HL);
               this.registers.HL++;
               break;
-            case 0b11:
-              // ld a, (hl-)
+            case 0b11: // ld a (hl-)
               this.registers.A = this.memory.getByteAt(this.registers.HL);
               this.registers.HL--;
               break;
@@ -528,28 +523,34 @@ export class CPU extends Debugger<CpuInfo> {
         if(y === 0b110) { // inc (hl)
           const value = this.increment(this.memory.getByteAt(this.registers.HL));
           this.memory.setByteAt(this.registers.HL, value);
+          this.incrementCycles(8);
         } else { // inc [b, c, d, e, h, l, a]
           register = this.get8BitRegisterName(y);
           this.registers[register] = this.increment(this.registers[register]);
+          this.incrementCycles(4);
         }
-
-        this.incrementCycles(4);
         break;
       case 0b101: // 8-bit DEC
         if(y === 0b110) { // dec (hl)
           const value = this.decrement(this.memory.getByteAt(this.registers.HL));
           this.memory.setByteAt(this.registers.HL, value);
+          this.incrementCycles(8);
         } else { // dec [b, c, d, e, h, l, a]
-          const r = this.get8BitRegisterName(y);
-          this.registers[r] = this.decrement(this.registers[r]);
+          register = this.get8BitRegisterName(y);
+          this.registers[register] = this.decrement(this.registers[register]);
+          this.incrementCycles(4);
+        }
+        break;
+      case 0b110: // ld [b, c, d, e, h, l, (hl), a] x
+        if(y === 0b110) { // ld (hl) x
+          this.memory.setByteAt(this.registers.HL, this.getNextByte());
+          this.incrementCycles(8);
+        } else { // ld [b, c, d, e, h, l, a] x
+          register = this.get8BitRegisterName(y);
+          this.registers[register] = this.getNextByte();
+          this.incrementCycles(4);
         }
 
-        this.incrementCycles(4);
-        break;
-      case 0b110: // ld [b,c,d,e,h,l,a] x
-        register = this.get8BitRegisterName(y);
-        this.registers[register] = this.getNextByte();
-        this.incrementCycles(4);
         this.incrementPC(1);
         break;
       case 0b111: // Assorted operations on accumulator/flags
