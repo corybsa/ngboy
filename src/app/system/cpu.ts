@@ -1780,6 +1780,10 @@ export class CPU extends Debugger<CpuInfo> {
     return this.cycles;
   }
 
+  public getRegisters(): Registers {
+    return this.registers;
+  }
+
   /**
    * Tick one clock cycle
    */
