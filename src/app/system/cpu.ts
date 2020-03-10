@@ -78,10 +78,10 @@ export class CPU extends Debugger<CpuInfo> {
   public static FREQUENCY = 4194304;
 
   public static FLAGS = {
-    ZERO: 0x80, // 0b10000000
-    SUB: 0x40,  // 0x01000000
-    HALF: 0x20, // 0x00100000
-    CARRY: 0x10 // 0x00010000
+    ZERO:  0b10000000,
+    SUB:   0b01000000,
+    HALF:  0b00100000,
+    CARRY: 0b00010000
   };
 
   private registers = new Registers();
