@@ -6,70 +6,70 @@ z = bits 2-0 of the op code
 op = the op
 
        s | c |  x | y | z  | op
-0x00 - 0 - 4  - 00 000 000 - nop xxxxxxxxxxxxxxxxxxxxxxxxx
-0x01 - 2 - 12 - 00 000 001 - ld bc xx xxxxxxxxxxxxxxxxxxxxxxxxx
-0x02 - 0 - 8  - 00 000 010 - ld bcp xxxxxxxxxxxxxxxxxxxxxxxxx
-0x03 - 0 - 8  - 00 000 011 - inc bc xxxxxxxxxxxxxxxxxxxxxxxxx
-0x04 - 0 - 4  - 00 000 100 - inc b xxxxxxxxxxxxxxxxxxxxxxxxx
-0x05 - 0 - 4  - 00 000 101 - dec b xxxxxxxxxxxxxxxxxxxxxxxxx
-0x06 - 1 - 8  - 00 000 110 - ld b x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x07 - 0 - 4  - 00 000 111 - rlca xxxxxxxxxxxxxxxxxxxxxxxxx
-0x08 - 2 - 20 - 00 001 000 - ld xxp sp xxxxxxxxxxxxxxxxxxxxxxxxx
-0x09 - 0 - 8  - 00 001 001 - add hl bcxxxxxxxxxxxxxxxxxxxxxxxxx
-0x0A - 0 - 8  - 00 001 010 - ld a bcp xxxxxxxxxxxxxxxxxxxxxxxxx
-0x0B - 0 - 8  - 00 001 011 - dec bc xxxxxxxxxxxxxxxxxxxxxxxxx
-0x0C - 0 - 4  - 00 001 100 - inc c xxxxxxxxxxxxxxxxxxxxxxxxx
-0x0D - 0 - 4  - 00 001 101 - dec c xxxxxxxxxxxxxxxxxxxxxxxxx
-0x0E - 1 - 8  - 00 001 110 - ld c x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x0F - 0 - 4  - 00 001 111 - rrca xxxxxxxxxxxxxxxxxxxxxxxxx
-0x10 - 1 - 4  - 00 010 000 - stop xxxxxxxxxxxxxxxxxxxxxxxxx
-0x11 - 2 - 12 - 00 010 001 - ld de xx xxxxxxxxxxxxxxxxxxxxxxxxx
-0x12 - 0 - 8  - 00 010 010 - ld dep a xxxxxxxxxxxxxxxxxxxxxxxxx
-0x13 - 0 - 8  - 00 010 011 - inc de xxxxxxxxxxxxxxxxxxxxxxxxx
-0x14 - 0 - 4  - 00 010 100 - inc d xxxxxxxxxxxxxxxxxxxxxxxxx
-0x15 - 0 - 4  - 00 010 101 - dec d xxxxxxxxxxxxxxxxxxxxxxxxx
-0x16 - 1 - 8  - 00 010 110 - ld d x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x17 - 0 - 4  - 00 010 111 - rla xxxxxxxxxxxxxxxxxxxxxxxxx
-0x18 - 1 - 12 - 00 011 000 - jr x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x19 - 0 - 8  - 00 011 001 - add hl dexxxxxxxxxxxxxxxxxxxxxxxxx
-0x1A - 0 - 8  - 00 011 010 - ld a dep xxxxxxxxxxxxxxxxxxxxxxxxx
-0x1B - 0 - 8  - 00 011 011 - dec de xxxxxxxxxxxxxxxxxxxxxxxxx
-0x1C - 0 - 4  - 00 011 100 - inc e xxxxxxxxxxxxxxxxxxxxxxxxx
-0x1D - 0 - 4  - 00 011 101 - dec e xxxxxxxxxxxxxxxxxxxxxxxxx
-0x1E - 1 - 8  - 00 011 110 - ld e x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x1F - 0 - 4  - 00 011 111 - rra xxxxxxxxxxxxxxxxxxxxxxxxx
-0x20 - 1 - 0  - 00 100 000 - jr nz x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x21 - 2 - 12 - 00 100 001 - ld hl xx xxxxxxxxxxxxxxxxxxxxxxxxx
-0x22 - 0 - 8  - 00 100 010 - ldi hlp a xxxxxxxxxxxxxxxxxxxxxxxxx
-0x23 - 0 - 8  - 00 100 011 - inc hl xxxxxxxxxxxxxxxxxxxxxxxxx
-0x24 - 0 - 4  - 00 100 100 - inc h xxxxxxxxxxxxxxxxxxxxxxxxx
-0x25 - 0 - 4  - 00 100 101 - dec h xxxxxxxxxxxxxxxxxxxxxxxxx
-0x26 - 1 - 8  - 00 100 110 - ld h x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x27 - 0 - 4  - 00 100 111 - daa xxxxxxxxxxxxxxxxxxxxxxxxx
-0x28 - 1 - 0  - 00 101 000 - jr z x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x29 - 0 - 8  - 00 101 001 - add hl hlxxxxxxxxxxxxxxxxxxxxxxxxx
-0x2A - 0 - 8  - 00 101 010 - ldi a hlp xxxxxxxxxxxxxxxxxxxxxxxxx
-0x2B - 0 - 8  - 00 101 011 - dec hl xxxxxxxxxxxxxxxxxxxxxxxxx
-0x2C - 0 - 4  - 00 101 100 - inc l xxxxxxxxxxxxxxxxxxxxxxxxx
-0x2D - 0 - 4  - 00 101 101 - dec l xxxxxxxxxxxxxxxxxxxxxxxxx
-0x2E - 1 - 8  - 00 101 110 - ld l x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x2F - 0 - 4  - 00 101 111 - cpl xxxxxxxxxxxxxxxxxxxxxxxxx
-0x30 - 1 - 0  - 00 110 000 - jr nc x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x31 - 2 - 12 - 00 110 001 - ld sp xx xxxxxxxxxxxxxxxxxxxxxxxxx
-0x32 - 0 - 8  - 00 110 010 - ldd hlp a xxxxxxxxxxxxxxxxxxxxxxxxx
-0x33 - 0 - 8  - 00 110 011 - inc sp xxxxxxxxxxxxxxxxxxxxxxxxx
-0x34 - 0 - 8  - 00 110 100 - inc hlp xxxxxxxxxxxxxxxxxxxxxxxxx
-0x35 - 0 - 8  - 00 110 101 - dec hlp xxxxxxxxxxxxxxxxxxxxxxxxx
-0x36 - 1 - 8  - 00 110 110 - ld hlp x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x37 - 0 - 4  - 00 110 111 - scf xxxxxxxxxxxxxxxxxxxxxxxxx
-0x38 - 1 - 0  - 00 111 000 - jr c x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x39 - 0 - 8  - 00 111 001 - add hl spxxxxxxxxxxxxxxxxxxxxxxxxx
-0x3A - 0 - 8  - 00 111 010 - ldd a hlp xxxxxxxxxxxxxxxxxxxxxxxxx
-0x3B - 0 - 8  - 00 111 011 - dec sp xxxxxxxxxxxxxxxxxxxxxxxxx
-0x3C - 0 - 4  - 00 111 100 - inc a xxxxxxxxxxxxxxxxxxxxxxxxx
-0x3D - 0 - 4  - 00 111 101 - dec a xxxxxxxxxxxxxxxxxxxxxxxxx
-0x3E - 1 - 8  - 00 111 110 - ld a x xxxxxxxxxxxxxxxxxxxxxxxxx
-0x3F - 0 - 4  - 00 111 111 - ccf xxxxxxxxxxxxxxxxxxxxxxxxx
+0x00 - 0 - 4  - 00 000 000 - nop x
+0x01 - 2 - 12 - 00 000 001 - ld bc xx
+0x02 - 0 - 8  - 00 000 010 - ld bcp a
+0x03 - 0 - 8  - 00 000 011 - inc bc
+0x04 - 0 - 4  - 00 000 100 - inc b
+0x05 - 0 - 4  - 00 000 101 - dec b
+0x06 - 1 - 8  - 00 000 110 - ld b x
+0x07 - 0 - 4  - 00 000 111 - rlca
+0x08 - 2 - 20 - 00 001 000 - ld xxp sp
+0x09 - 0 - 8  - 00 001 001 - add hl bc
+0x0A - 0 - 8  - 00 001 010 - ld a bcp
+0x0B - 0 - 8  - 00 001 011 - dec bc
+0x0C - 0 - 4  - 00 001 100 - inc c
+0x0D - 0 - 4  - 00 001 101 - dec c
+0x0E - 1 - 8  - 00 001 110 - ld c x
+0x0F - 0 - 4  - 00 001 111 - rrca
+0x10 - 1 - 4  - 00 010 000 - stop
+0x11 - 2 - 12 - 00 010 001 - ld de xx
+0x12 - 0 - 8  - 00 010 010 - ld dep a
+0x13 - 0 - 8  - 00 010 011 - inc de
+0x14 - 0 - 4  - 00 010 100 - inc d
+0x15 - 0 - 4  - 00 010 101 - dec d
+0x16 - 1 - 8  - 00 010 110 - ld d x
+0x17 - 0 - 4  - 00 010 111 - rla
+0x18 - 1 - 12 - 00 011 000 - jr x
+0x19 - 0 - 8  - 00 011 001 - add hl de
+0x1A - 0 - 8  - 00 011 010 - ld a dep
+0x1B - 0 - 8  - 00 011 011 - dec de
+0x1C - 0 - 4  - 00 011 100 - inc e
+0x1D - 0 - 4  - 00 011 101 - dec e
+0x1E - 1 - 8  - 00 011 110 - ld e x
+0x1F - 0 - 4  - 00 011 111 - rra
+0x20 - 1 - 0  - 00 100 000 - jr nz x
+0x21 - 2 - 12 - 00 100 001 - ld hl xx
+0x22 - 0 - 8  - 00 100 010 - ldi hlp a
+0x23 - 0 - 8  - 00 100 011 - inc hl
+0x24 - 0 - 4  - 00 100 100 - inc h
+0x25 - 0 - 4  - 00 100 101 - dec h
+0x26 - 1 - 8  - 00 100 110 - ld h x
+0x27 - 0 - 4  - 00 100 111 - daa
+0x28 - 1 - 0  - 00 101 000 - jr z x
+0x29 - 0 - 8  - 00 101 001 - add hl hl
+0x2A - 0 - 8  - 00 101 010 - ldi a hlp
+0x2B - 0 - 8  - 00 101 011 - dec hl
+0x2C - 0 - 4  - 00 101 100 - inc l
+0x2D - 0 - 4  - 00 101 101 - dec l
+0x2E - 1 - 8  - 00 101 110 - ld l x
+0x2F - 0 - 4  - 00 101 111 - cpl
+0x30 - 1 - 0  - 00 110 000 - jr nc x
+0x31 - 2 - 12 - 00 110 001 - ld sp xx
+0x32 - 0 - 8  - 00 110 010 - ldd hlp a
+0x33 - 0 - 8  - 00 110 011 - inc sp
+0x34 - 0 - 8  - 00 110 100 - inc hlp
+0x35 - 0 - 8  - 00 110 101 - dec hlp
+0x36 - 1 - 8  - 00 110 110 - ld hlp x
+0x37 - 0 - 4  - 00 110 111 - scf
+0x38 - 1 - 0  - 00 111 000 - jr c x
+0x39 - 0 - 8  - 00 111 001 - add hl sp
+0x3A - 0 - 8  - 00 111 010 - ldd a hlp
+0x3B - 0 - 8  - 00 111 011 - dec sp
+0x3C - 0 - 4  - 00 111 100 - inc a
+0x3D - 0 - 4  - 00 111 101 - dec a
+0x3E - 1 - 8  - 00 111 110 - ld a x
+0x3F - 0 - 4  - 00 111 111 - ccf
 
 
        s | c |  x | y | z  | op
