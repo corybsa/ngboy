@@ -4,7 +4,6 @@ import { Registers } from './registers';
 import { Memory } from './memory';
 import { Injectable } from '@angular/core';
 import { IORegisters } from '../util/io-registers';
-import { ALU } from './alu';
 
 /**
  * <h3>Description</h3>
@@ -85,7 +84,6 @@ export class CPU extends Debugger<CpuInfo> {
   };
 
   private registers = new Registers();
-  private alu: ALU;
 
   private ime = true;
   private pendingEnableIME = false;
@@ -98,8 +96,6 @@ export class CPU extends Debugger<CpuInfo> {
   constructor(private memory: Memory) {
     super();
 
-    this.alu = new ALU(this);
-
     this.registers.AF = 0x01B0;
     this.registers.BC = 0x0013;
     this.registers.DE = 0x00D8;
@@ -108,68 +104,6 @@ export class CPU extends Debugger<CpuInfo> {
     this.registers.PC = 0x0100;
 
     this.emit();
-  }
-
-  /**
-   * Increments a {@code value} by 1 and sets the necessary flags.
-   * @param value The value to increment.
-   * @return The incremented value.
-   */
-  private increment(value: number): number {
-    // FLAG_HALF - set if there was a carry from the 3rd bit to the 4th bit, otherwise reset.
-    if((value & 0x0F) === 0x0F) {
-      this.setFlags(CPU.FLAGS.HALF);
-    } else {
-      this.resetFlags(CPU.FLAGS.HALF);
-    }
-
-    // increment value by 1 and get the first 8 bits
-    value = (value + 1) & 0xFF;
-
-    // FLAG_SUB - reset
-    this.resetFlags(CPU.FLAGS.SUB);
-
-    // FLAG_ZERO - set if result is 0, otherwise reset
-    if(value === 0) {
-      this.setFlags(CPU.FLAGS.ZERO);
-    } else {
-      this.resetFlags(CPU.FLAGS.ZERO);
-    }
-
-    return value;
-  }
-
-  /**
-   * Decrements a {@code value} by 1 and sets the necessary flags.
-   * @param value The value to decrement.
-   * @return The decremented value.
-   */
-  private decrement(value: number): number {
-    // decrement value by 1 and get the first 8 bits
-    const result = (value - 1) & 0xFF;
-
-    // FLAG_HALF - set if there was a carry (borrow) from the 4th bit to the 3rd bit, otherwise reset.
-    // invert value's bits, xor with (value - 1) then find out what the 4th bit is with (& 0x10).
-    // If it equals zero, then there was a carry.
-    if((((~value) ^ (result)) & 0x10) === 0) {
-      this.setFlags(CPU.FLAGS.HALF);
-    } else {
-      this.resetFlags(CPU.FLAGS.HALF);
-    }
-
-    value = result;
-
-    // FLAG_SUB - set
-    this.setFlags(CPU.FLAGS.SUB);
-
-    // FLAG_ZERO - set if result is 0, otherwise reset
-    if(value === 0) {
-      this.setFlags(CPU.FLAGS.ZERO);
-    } else {
-      this.resetFlags(CPU.FLAGS.ZERO);
-    }
-
-    return value;
   }
 
   /**
@@ -459,7 +393,7 @@ export class CPU extends Debugger<CpuInfo> {
           this.incrementPC(2);
         } else if(q === 1) {
           // add HL [BC, DE, HL, SP]
-          this.registers.HL = this.alu.add16Bit(this.registers.HL, this.registers[register]);
+          this.registers.HL = this.add16Bit(this.registers.HL, this.registers[register]);
           this.incrementCycles(8);
         }
         break;
@@ -627,88 +561,88 @@ export class CPU extends Debugger<CpuInfo> {
       case 0b000: // add
         if(z !== 0b110) {
           // add a, [b, c, d, e, h, l, a]
-          this.registers.A = this.alu.add8Bit(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
+          this.registers.A = this.add8Bit(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
           this.incrementCycles(4);
         } else {
           // add a, (hl)
-          this.registers.A = this.alu.add8Bit(this.registers.A, this.memory.getByteAt(this.registers.HL));
+          this.registers.A = this.add8Bit(this.registers.A, this.memory.getByteAt(this.registers.HL));
           this.incrementCycles(8);
         }
         break;
       case 0b001: // adc
         if(z !== 0b110) {
           // adc a, [b, c, d, e, h, l, a]
-          this.registers.A = this.alu.adc(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
+          this.registers.A = this.adc(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
           this.incrementCycles(4);
         } else {
           // adc a, (hl)
-          this.registers.A = this.alu.adc(this.registers.A, this.memory.getByteAt(this.registers.HL));
+          this.registers.A = this.adc(this.registers.A, this.memory.getByteAt(this.registers.HL));
           this.incrementCycles(8);
         }
         break;
       case 0b010: // sub
         if(z !== 0b110) {
           // sub a, [b, c, d, e, h, l, a]
-          this.registers.A = this.alu.sub(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
+          this.registers.A = this.sub(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
           this.incrementCycles(4);
         } else {
           // sub a, (hl)
-          this.registers.A = this.alu.sub(this.registers.A, this.memory.getByteAt(this.registers.HL));
+          this.registers.A = this.sub(this.registers.A, this.memory.getByteAt(this.registers.HL));
           this.incrementCycles(8);
         }
         break;
       case 0b011: // sbc
         if(z !== 0b110) {
           // sbc a, [b, c, d, e, h, l, a]
-          this.registers.A = this.alu.sbc(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
+          this.registers.A = this.sbc(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
           this.incrementCycles(4);
         } else {
           // sbc a, (hl)
-          this.registers.A = this.alu.sbc(this.registers.A, this.memory.getByteAt(this.registers.HL));
+          this.registers.A = this.sbc(this.registers.A, this.memory.getByteAt(this.registers.HL));
           this.incrementCycles(8);
         }
         break;
       case 0b100: // and
         if(z !== 0b110) {
           // and a, [b, c, d, e, h, l, a]
-          this.registers.A = this.alu.and(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
+          this.registers.A = this.and(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
           this.incrementCycles(4);
         } else {
           // and a, (hl)
-          this.registers.A = this.alu.and(this.registers.A, this.memory.getByteAt(this.registers.HL));
+          this.registers.A = this.and(this.registers.A, this.memory.getByteAt(this.registers.HL));
           this.incrementCycles(8);
         }
         break;
       case 0b101: // xor
         if(z !== 0b110) {
           // xor a, [b, c, d, e, h, l, a]
-          this.registers.A = this.alu.xor(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
+          this.registers.A = this.xor(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
           this.incrementCycles(4);
         } else {
           // xor a, (hl)
-          this.registers.A = this.alu.xor(this.registers.A, this.memory.getByteAt(this.registers.HL));
+          this.registers.A = this.xor(this.registers.A, this.memory.getByteAt(this.registers.HL));
           this.incrementCycles(8);
         }
         break;
       case 0b110: // or
         if(z !== 0b110) {
           // or a, [b, c, d, e, h, l, a]
-          this.registers.A = this.alu.or(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
+          this.registers.A = this.or(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
           this.incrementCycles(4);
         } else {
           // or a, (hl)
-          this.registers.A = this.alu.or(this.registers.A, this.memory.getByteAt(this.registers.HL));
+          this.registers.A = this.or(this.registers.A, this.memory.getByteAt(this.registers.HL));
           this.incrementCycles(8);
         }
         break;
       case 0b111: // cp
         if(z !== 0b110) {
           // cp a, [b, c, d, e, h, l, a]
-          this.registers.A = this.alu.cp(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
+          this.registers.A = this.cp(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
           this.incrementCycles(4);
         } else {
           // cp a, (hl)
-          this.registers.A = this.alu.cp(this.registers.A, this.memory.getByteAt(this.registers.HL));
+          this.registers.A = this.cp(this.registers.A, this.memory.getByteAt(this.registers.HL));
           this.incrementCycles(8);
         }
         break;
@@ -775,7 +709,7 @@ export class CPU extends Debugger<CpuInfo> {
             this.incrementPC(1);
             break;
           case 0b101: // add sp x
-            this.registers.SP = this.alu.add16Bit(this.registers.SP, this.getNextByte());
+            this.registers.SP = this.add16Bit(this.registers.SP, this.getNextByte());
             this.setFlags(CPU.FLAGS.ZERO);
             this.incrementCycles(16);
             this.incrementPC(1);
@@ -1010,28 +944,28 @@ export class CPU extends Debugger<CpuInfo> {
       case 0b110: // Operate on accumulator and immediate operand
         switch(y) {
           case 0b000: // add a x
-            this.registers.A = this.alu.add8Bit(this.registers.A, this.getNextByte());
+            this.registers.A = this.add8Bit(this.registers.A, this.getNextByte());
             break;
           case 0b001: // adc a x
-            this.registers.A = this.alu.adc(this.registers.A, this.getNextByte());
+            this.registers.A = this.adc(this.registers.A, this.getNextByte());
             break;
           case 0b010: // sub x
-            this.registers.A = this.alu.sub(this.registers.A, this.getNextByte());
+            this.registers.A = this.sub(this.registers.A, this.getNextByte());
             break;
           case 0b011: // sbc a x
-            this.registers.A = this.alu.sbc(this.registers.A, this.getNextByte());
+            this.registers.A = this.sbc(this.registers.A, this.getNextByte());
             break;
           case 0b100: // and x
-            this.registers.A = this.alu.and(this.registers.A, this.getNextByte());
+            this.registers.A = this.and(this.registers.A, this.getNextByte());
             break;
           case 0b101: // xor x
-            this.registers.A = this.alu.xor(this.registers.A, this.getNextByte());
+            this.registers.A = this.xor(this.registers.A, this.getNextByte());
             break;
           case 0b110: // or x
-            this.registers.A = this.alu.or(this.registers.A, this.getNextByte());
+            this.registers.A = this.or(this.registers.A, this.getNextByte());
             break;
           case 0b111: // cp x
-            this.registers.A = this.alu.cp(this.registers.A, this.getNextByte());
+            this.registers.A = this.cp(this.registers.A, this.getNextByte());
             break;
         }
 
@@ -1042,6 +976,68 @@ export class CPU extends Debugger<CpuInfo> {
         this.rst(y * 8);
         break;
     }
+  }
+
+  /**
+   * Increments a {@code value} by 1 and sets the necessary flags.
+   * @param value The value to increment.
+   * @return The incremented value.
+   */
+  private increment(value: number): number {
+    // FLAG_HALF - set if there was a carry from the 3rd bit to the 4th bit, otherwise reset.
+    if((value & 0x0F) === 0x0F) {
+      this.setFlags(CPU.FLAGS.HALF);
+    } else {
+      this.resetFlags(CPU.FLAGS.HALF);
+    }
+
+    // increment value by 1 and get the first 8 bits
+    value = (value + 1) & 0xFF;
+
+    // FLAG_SUB - reset
+    this.resetFlags(CPU.FLAGS.SUB);
+
+    // FLAG_ZERO - set if result is 0, otherwise reset
+    if(value === 0) {
+      this.setFlags(CPU.FLAGS.ZERO);
+    } else {
+      this.resetFlags(CPU.FLAGS.ZERO);
+    }
+
+    return value;
+  }
+
+  /**
+   * Decrements a {@code value} by 1 and sets the necessary flags.
+   * @param value The value to decrement.
+   * @return The decremented value.
+   */
+  private decrement(value: number): number {
+    // decrement value by 1 and get the first 8 bits
+    const result = (value - 1) & 0xFF;
+
+    // FLAG_HALF - set if there was a carry (borrow) from the 4th bit to the 3rd bit, otherwise reset.
+    // invert value's bits, xor with (value - 1) then find out what the 4th bit is with (& 0x10).
+    // If it equals zero, then there was a carry.
+    if((((~value) ^ (result)) & 0x10) === 0) {
+      this.setFlags(CPU.FLAGS.HALF);
+    } else {
+      this.resetFlags(CPU.FLAGS.HALF);
+    }
+
+    value = result;
+
+    // FLAG_SUB - set
+    this.setFlags(CPU.FLAGS.SUB);
+
+    // FLAG_ZERO - set if result is 0, otherwise reset
+    if(value === 0) {
+      this.setFlags(CPU.FLAGS.ZERO);
+    } else {
+      this.resetFlags(CPU.FLAGS.ZERO);
+    }
+
+    return value;
   }
 
   /**
@@ -1113,6 +1109,248 @@ export class CPU extends Debugger<CpuInfo> {
     this.registers.A = this.registers.A | carry;
 
     this.resetFlags(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.HALF);
+  }
+
+  /**
+   * Adds two 8-bit numbers together and sets the necessary flags.
+   * @param num1 The first number.
+   * @param num2 The second number.
+   * @return The 8-bit result of the addition.
+   */
+  public add8Bit(num1: number, num2: number): number {
+    const result = num1 + num2;
+
+    if((result & 0xFF00) !== 0) {
+      this.setFlags(CPU.FLAGS.CARRY);
+    } else {
+      this.resetFlags(CPU.FLAGS.CARRY);
+    }
+
+    if((result & 0xFF) !== 0) {
+      this.resetFlags(CPU.FLAGS.ZERO);
+    } else {
+      this.setFlags(CPU.FLAGS.ZERO);
+    }
+
+    if(((num1 & 0x0F) + (num2 & 0x0F)) > 0x0F) {
+      this.setFlags(CPU.FLAGS.HALF);
+    } else {
+      this.resetFlags(CPU.FLAGS.HALF);
+    }
+
+    this.resetFlags(CPU.FLAGS.SUB);
+    return result & 0xFF;
+  }
+
+  /**
+   * Adds two 16-bit numbers together and sets the necessary flags.
+   * @param num1 The first number.
+   * @param num2 The second number.
+   * @return The 16-bit result of the addition.
+   */
+  public add16Bit(num1: number, num2: number): number {
+    const result = num1 + num2;
+
+    if((result & 0xFFFF0000) !== 0) {
+      this.setFlags(CPU.FLAGS.CARRY);
+    } else {
+      this.resetFlags(CPU.FLAGS.CARRY);
+    }
+
+    if(((num1 & 0x0F00) + (num2 & 0x0F00)) > 0x0F00) {
+      this.setFlags(CPU.FLAGS.HALF);
+    } else {
+      this.resetFlags(CPU.FLAGS.HALF);
+    }
+
+    this.resetFlags(CPU.FLAGS.SUB);
+    return result & 0xFFFF;
+  }
+
+  /**
+   * Adds two 8-bit numbers with the current value of the carry flag and sets the necessary flags.
+   * @param num1 The first number.
+   * @param num2 The second number.
+   * @return The 8-bit result of the addition.
+   */
+  public adc(num1: number, num2: number): number {
+    const carry = (this.registers.F & CPU.FLAGS.CARRY) >> 4;
+    const result = num1 + num2 + carry;
+
+    if((result & 0xFF00) !== 0) {
+      this.setFlags(CPU.FLAGS.CARRY);
+    } else {
+      this.resetFlags(CPU.FLAGS.CARRY);
+    }
+
+    if((result & 0xFF) !== 0) {
+      this.resetFlags(CPU.FLAGS.ZERO);
+    } else {
+      this.setFlags(CPU.FLAGS.ZERO);
+    }
+
+    if(((num1 & 0x0F) + (num2 & 0x0F) + carry) > 0x0F) {
+      this.setFlags(CPU.FLAGS.HALF);
+    } else {
+      this.resetFlags(CPU.FLAGS.HALF);
+    }
+
+    this.resetFlags(CPU.FLAGS.SUB);
+    return result & 0xFF;
+  }
+
+  /**
+   * Subtracts {@code num1} from {@code num2} and sets the necessary flags.
+   * @param num1 The lvalue of the subtraction.
+   * @param num2 The rvalue of the subtraction.
+   * @return The 8-bit result of the subtraction.
+   */
+  public sub(num1: number, num2: number): number {
+    if(num2 > num1) {
+      this.setFlags(CPU.FLAGS.CARRY);
+    } else {
+      this.resetFlags(CPU.FLAGS.CARRY);
+    }
+
+    if((num2 & 0x0F) > (num1 & 0x0F)) {
+      this.setFlags(CPU.FLAGS.HALF);
+    } else {
+      this.resetFlags(CPU.FLAGS.HALF);
+    }
+
+    const result = (num1 - num2) & 0xFF;
+
+    if(result === 0) {
+      this.setFlags(CPU.FLAGS.ZERO);
+    } else {
+      this.resetFlags(CPU.FLAGS.ZERO);
+    }
+
+    this.setFlags(CPU.FLAGS.SUB);
+
+    return result;
+  }
+
+  /**
+   * Subtracts {@code num2} and the current num2 of the carry flag from A and sets the necessary flags.
+   * @param num1 The lvalue of the subtraction.
+   * @param num2 The rvalue of the subtraction.
+   * @return The 8-bit result of the subtraction.
+   */
+  public sbc(num1: number, num2: number): number {
+    let result = num1 - num2;
+    result = result - ((this.registers.F & CPU.FLAGS.CARRY) >> 4);
+
+    if(result < 0) {
+      this.setFlags(CPU.FLAGS.CARRY);
+    } else {
+      this.resetFlags(CPU.FLAGS.CARRY);
+    }
+
+    result &= 0xFF;
+
+    if(result === 0) {
+      this.setFlags(CPU.FLAGS.ZERO);
+    } else {
+      this.resetFlags(CPU.FLAGS.ZERO);
+    }
+
+    if(((result ^ num2 ^ num1) & 0x10) === 0x10) {
+      this.setFlags(CPU.FLAGS.HALF);
+    } else {
+      this.resetFlags(CPU.FLAGS.HALF);
+    }
+
+    this.setFlags(CPU.FLAGS.SUB);
+
+    return result;
+  }
+
+  /**
+   * Performs a bitwise and operation on {@code num1} and {@code num2}.
+   * @param num1 The first value bitwise and with A
+   * @param num2 The second value bitwise and with A
+   */
+  public and(num1: number, num2: number): number {
+    num1 &= num2;
+
+    if(num1 === 0) {
+      this.setFlags(CPU.FLAGS.ZERO);
+    } else {
+      this.resetFlags(CPU.FLAGS.ZERO);
+    }
+
+    this.resetFlags(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+    this.setFlags(CPU.FLAGS.HALF);
+
+    return num1;
+  }
+
+  /**
+   * Performs a bitwise xor operation on {@code num1} and {@code num2}.
+   * @param num1 The first value to bitwise xor with A
+   * @param num2 The second value to bitwise xor with A
+   */
+  public xor(num1: number, num2: number) {
+    num1 ^= num2;
+
+    if(num1 === 0) {
+      this.setFlags(CPU.FLAGS.ZERO);
+    } else {
+      this.resetFlags(CPU.FLAGS.ZERO);
+    }
+
+    this.resetFlags(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+
+    return num1;
+  }
+
+  /**
+   * Performs a bitwise or operation on {@code num1} and {@code num2}.
+   * @param num1 The first value to bitwise or with A
+   * @param num2 The second value to bitwise or with A
+   */
+  public or(num1: number, num2: number): number {
+    num1 |= num2;
+
+    if(num1 === 0) {
+      this.setFlags(CPU.FLAGS.ZERO);
+    } else {
+      this.resetFlags(CPU.FLAGS.ZERO);
+    }
+
+    this.resetFlags(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+
+    return num1;
+  }
+
+  /**
+   * Compares the contents of {@code num1} and {@code num2} and sets flags if they are equal.
+   * @param num1 The first value to compare
+   * @param num2 The second value to compare
+   */
+  public cp(num1: number, num2: number): number {
+    if(num1 === num2) {
+      this.setFlags(CPU.FLAGS.ZERO);
+    } else {
+      this.resetFlags(CPU.FLAGS.ZERO);
+    }
+
+    if((num1 & 0x0F) < (num2 & 0x0F)) {
+      this.setFlags(CPU.FLAGS.HALF);
+    } else {
+      this.resetFlags(CPU.FLAGS.HALF);
+    }
+
+    if(num1 < num2) {
+      this.setFlags(CPU.FLAGS.CARRY);
+    } else {
+      this.resetFlags(CPU.FLAGS.CARRY);
+    }
+
+    this.setFlags(CPU.FLAGS.SUB);
+
+    return num1;
   }
 
   /**
@@ -1536,10 +1774,6 @@ export class CPU extends Debugger<CpuInfo> {
    */
   public resetFlags(flags: number): void {
     this.registers.AF = this.registers.AF & ~flags;
-  }
-
-  public getRegisters(): Registers {
-    return this.registers;
   }
 
   public getCycles(): number {
