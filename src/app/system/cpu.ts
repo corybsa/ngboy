@@ -340,49 +340,44 @@ export class CPU extends Debugger<CpuInfo> {
             this.incrementPC(1);
             break;
           case 0b011: // jr x
-            this.incrementPC(this.getNextByte());
+            this.jumpRelative(this.getNextByte());
             this.incrementCycles(12);
-            this.incrementPC(1);
             break;
           case 0b100: // jr nz x
             if((this.registers.F & CPU.FLAGS.ZERO) !== CPU.FLAGS.ZERO) {
-              this.jumpRelative();
+              this.jumpRelative(this.getNextByte());
               this.incrementCycles(12);
             } else {
               this.incrementCycles(8);
+              this.incrementPC(1);
             }
-
-            this.incrementPC(1);
             break;
           case 0b101: // jr z x
             if((this.registers.F & CPU.FLAGS.ZERO) === CPU.FLAGS.ZERO) {
-              this.jumpRelative();
+              this.jumpRelative(this.getNextByte());
               this.incrementCycles(12);
             } else {
               this.incrementCycles(8);
+              this.incrementPC(1);
             }
-
-            this.incrementPC(1);
             break;
           case 0b110: // jr nc x
             if((this.registers.F & CPU.FLAGS.CARRY) !== CPU.FLAGS.CARRY) {
-              this.jumpRelative();
+              this.jumpRelative(this.getNextByte());
               this.incrementCycles(12);
             } else {
               this.incrementCycles(8);
+              this.incrementPC(1);
             }
-
-            this.incrementPC(1);
             break;
           case 0b111: // jr c x
             if((this.registers.F & CPU.FLAGS.CARRY) === CPU.FLAGS.CARRY) {
-              this.jumpRelative();
+              this.jumpRelative(this.getNextByte());
               this.incrementCycles(12);
             } else {
               this.incrementCycles(8);
+              this.incrementPC(1);
             }
-
-            this.incrementPC(1);
             break;
         }
         break;
@@ -1046,9 +1041,7 @@ export class CPU extends Debugger<CpuInfo> {
   /**
    * Perform a relative jump. Increments PC by the amount of the next byte (between -128 and 127)
    */
-  private jumpRelative() {
-    const op = this.getNextByte();
-
+  private jumpRelative(op: number) {
     if(op <= 127) {
       this.incrementPC(op);
     } else {
