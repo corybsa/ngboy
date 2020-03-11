@@ -4,6 +4,8 @@ import { Registers } from './registers';
 import { Memory } from './memory';
 import { Injectable } from '@angular/core';
 import { IORegisters } from '../util/io-registers';
+import { Interrupts } from '../util/interrupts';
+import { Timers } from './timers';
 
 /**
  * <h3>Description</h3>
@@ -92,6 +94,7 @@ export class CPU extends Debugger<CpuInfo> {
 
   private cycles = 0;
   private cyclesSinceLastSync = 0;
+  private lastOpCycles = 0;
 
   constructor(private memory: Memory) {
     super();
@@ -1750,6 +1753,67 @@ export class CPU extends Debugger<CpuInfo> {
   private incrementCycles(n: number) {
     this.cycles += n;
     this.cyclesSinceLastSync += n;
+    this.lastOpCycles = n;
+  }
+
+  /**
+   * Gets the value of the interrupt flag.
+   * @return The value at memory address 0xFF0F
+   */
+  private getIF(): number {
+    return this.memory.getByteAt(IORegisters.INTERRUPT_FLAGS);
+  }
+
+  /**
+   * Gets the value of the interrupt enable.
+   * @return The value at memory address 0xFFFF
+   */
+  private getIE(): number {
+    return this.memory.getByteAt(IORegisters.INTERRUPT_ENABLE);
+  }
+
+  /**
+   * Check for the 5 different hardware interrupts and service them as needed. They are serviced in order of priority.
+   * The priority is as follows:
+   * VBLANK, LCD Status, Timer overflow, Serial input, JoyPad input
+   */
+  private checkInterrupts() {
+    // TODO: interrupts are not working properly
+    const enabledInterrupts = this.getIE() & this.getIF();
+
+    if((enabledInterrupts & Interrupts.VBLANK) === Interrupts.VBLANK) {
+      this.serviceInterrupt(Interrupts.VBLANK, 0x40);
+    } else if((enabledInterrupts & Interrupts.LCD_STAT) === Interrupts.LCD_STAT) {
+      this.serviceInterrupt(Interrupts.LCD_STAT, 0x48);
+    } else if((enabledInterrupts & Interrupts.TIMER) === Interrupts.TIMER) {
+      this.serviceInterrupt(Interrupts.TIMER, 0x50);
+    } else if((enabledInterrupts & Interrupts.SERIAL) === Interrupts.SERIAL) {
+      this.serviceInterrupt(Interrupts.SERIAL, 0x58);
+    } else if((enabledInterrupts & Interrupts.JOYPAD) === Interrupts.JOYPAD) {
+      this.serviceInterrupt(Interrupts.JOYPAD, 0x60);
+    }
+  }
+
+  /**
+   * Servicing an interrupt disabled interrupts, resumes the CPU if it was stopped,
+   * resets the interrupt bit that was serviced, resets the PC to a certain address
+   * and consumes 5 cycles.
+   * @param interrupt The {@link Interrupts interrupt} to service.
+   * @param vector The address to reset to.
+   */
+  private serviceInterrupt(interrupt: number, vector: number) {
+    this.memory.setByteAt(IORegisters.INTERRUPT_FLAGS, this.getIF() & ~interrupt);
+
+    // the IME is really a flag saying 'enable/disable jumps to interrupt vectors.'
+    if(this.ime) {
+      this.rst(vector);
+    }
+
+    this.ime = false;
+    this.isStopped = false;
+
+    // he GameBoy takes 20 clock cycles to dispatch an interrupt
+    this.incrementCycles(20);
   }
 
   protected emit() {
@@ -1789,6 +1853,47 @@ export class CPU extends Debugger<CpuInfo> {
    */
   public tick() {
     this.decode(this.memory.getByteAt(this.registers.PC++));
+
+    /*if(this.isStopped) {
+      const flags = this.memory.getByteAt(IORegisters.INTERRUPT_FLAGS);
+      const ie = this.memory.getByteAt(IORegisters.INTERRUPT_ENABLE);
+
+      this.checkInterrupts();
+      this.gpu.tick(this.cycles);
+
+      if((ie & flags & 0x1F) !== 0) {
+        this.isStopped = false;
+      }
+
+      // the GameBoy takes another 4 clock cycles to dispatch events when halted
+      this.incrementCycles(4);
+      return;
+    }
+
+    if(this.cycles >= (CPU.FREQUENCY / Display.FREQUENCY)) {
+      this.cycles = 0;
+    }
+
+    this.synchronize();
+
+    // The EI instruction enables IME the following cycle to its execution.
+    if(this.pendingEnableIME) {
+      this.ime = true;
+      this.pendingEnableIME = false;
+    }
+
+    const shouldServiceInterrupts = (this.getIF() & this.getIE()) !== 0;
+
+    if(shouldServiceInterrupts) {
+      this.checkInterrupts();
+    } else {
+      this.decode(this.memory.getByteAt(this.registers.PC++));
+      this.gpu.tick(this.cycles);
+
+      // the DIV register needs to be updated every cycle
+      Timers.divCounter += this.lastOpCycles;
+      this.incrementTimers();
+    }*/
 
     this.emit();
   }
