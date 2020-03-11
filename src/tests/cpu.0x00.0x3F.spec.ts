@@ -32,8 +32,8 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x101);
-          expect(cpu.getCycles()).toBe(4);
+          expect((<any>cpu).registers.PC).toBe(0x101);
+          expect((<any>cpu).cycles).toBe(4);
         }));
       });
 
@@ -47,9 +47,9 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().BC).toBe(0xC0DE);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.BC).toBe(0xC0DE);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -68,11 +68,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getRegisters().A).toBe(0x69);
-          expect(cpu.getRegisters().BC).toBe(0xC000);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).registers.A).toBe(0x69);
+          expect((<any>cpu).registers.BC).toBe(0xC000);
           expect(memory.getByteAt(0xC000)).toBe(0x69);
-          expect(cpu.getCycles()).toBe(28);
+          expect((<any>cpu).cycles).toBe(28);
         }));
       });
 
@@ -88,9 +88,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().BC).toBe(0x0002);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.BC).toBe(0x0002);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -105,11 +105,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().B).toBe(0x01);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.B).toBe(0x01);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment B and set the HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -122,11 +122,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().B).toBe(0x10);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.B).toBe(0x10);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment B and set the ZERO and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -139,11 +139,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().B).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.B).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -158,11 +158,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().B).toBe(0xFE);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.B).toBe(0xFE);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement B and set the ZERO and SUB flags', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -175,11 +175,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().B).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.B).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement B and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -192,11 +192,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().B).toBe(0x0F);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.B).toBe(0x0F);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement B and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -209,11 +209,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().B).toBe(0xFF);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.B).toBe(0xFF);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -226,9 +226,9 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getRegisters().B).toBe(0xF3);
-          expect(cpu.getCycles()).toBe(8);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).registers.B).toBe(0xF3);
+          expect((<any>cpu).cycles).toBe(8);
         }));
       });
 
@@ -243,10 +243,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0x0B);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x0B);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -264,10 +264,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getRegisters().SP).toBe(0xC0DE);
-          expect(memory.getByteAt(0xC000)).toBe(cpu.getRegisters().SP);
-          expect(cpu.getCycles()).toBe(32);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).registers.SP).toBe(0xC0DE);
+          expect(memory.getByteAt(0xC000)).toBe((<any>cpu).registers.SP);
+          expect((<any>cpu).cycles).toBe(32);
         }));
       });
 
@@ -287,11 +287,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x107);
-          expect(cpu.getRegisters().BC).toBe(0x0605);
-          expect(cpu.getRegisters().HL).toBe(0x9028);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF);
-          expect(cpu.getCycles()).toBe(32);
+          expect((<any>cpu).registers.PC).toBe(0x107);
+          expect((<any>cpu).registers.BC).toBe(0x0605);
+          expect((<any>cpu).registers.HL).toBe(0x9028);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(32);
         }));
 
         it('should add BC to HL and store the result in HL, set CARRY', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -309,10 +309,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x107);
-          expect(cpu.getRegisters().HL).toBe(0x0000);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(32);
+          expect((<any>cpu).registers.PC).toBe(0x107);
+          expect((<any>cpu).registers.HL).toBe(0x0000);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(32);
         }));
       });
 
@@ -329,10 +329,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().BC).toBe(0xC000);
-          expect(cpu.getRegisters().A).toBe(0x12);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.BC).toBe(0xC000);
+          expect((<any>cpu).registers.A).toBe(0x12);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -348,9 +348,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().BC).toBe(0xBFFF);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.BC).toBe(0xBFFF);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -365,11 +365,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().C).toBe(0x01);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.C).toBe(0x01);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment C and set the HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -382,11 +382,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().C).toBe(0x10);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.C).toBe(0x10);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment C and set the ZERO and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -399,11 +399,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().C).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.C).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -418,11 +418,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().C).toBe(0xFE);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.C).toBe(0xFE);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement C and set the ZERO and SUB flags', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -435,11 +435,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().C).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.C).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement C and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -452,11 +452,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().C).toBe(0x0F);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.C).toBe(0x0F);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement C and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -469,11 +469,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().C).toBe(0xFF);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.C).toBe(0xFF);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -486,9 +486,9 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getRegisters().C).toBe(0xF3);
-          expect(cpu.getCycles()).toBe(8);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).registers.C).toBe(0xF3);
+          expect((<any>cpu).cycles).toBe(8);
         }));
       });
 
@@ -503,10 +503,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0x9D);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x9D);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should rotate A right with a carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -519,10 +519,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0x55);
-          expect(cpu.getRegisters().F).toBe(0x00);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x55);
+          expect((<any>cpu).registers.F).toBe(0x00);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
     });
@@ -537,8 +537,8 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getCycles()).toBe(4);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).cycles).toBe(4);
         }));
       });
 
@@ -552,9 +552,9 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().DE).toBe(0xC0DE);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.DE).toBe(0xC0DE);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -573,11 +573,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getRegisters().A).toBe(0x69);
-          expect(cpu.getRegisters().DE).toBe(0xC000);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).registers.A).toBe(0x69);
+          expect((<any>cpu).registers.DE).toBe(0xC000);
           expect(memory.getByteAt(0xC000)).toBe(0x69);
-          expect(cpu.getCycles()).toBe(28);
+          expect((<any>cpu).cycles).toBe(28);
         }));
       });
 
@@ -593,9 +593,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().DE).toBe(0x0002);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.DE).toBe(0x0002);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -610,11 +610,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().D).toBe(0x01);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.D).toBe(0x01);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment D and set the HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -627,11 +627,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().D).toBe(0x10);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.D).toBe(0x10);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment D and set the ZERO and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -644,11 +644,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().D).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.D).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -663,11 +663,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().D).toBe(0xFE);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.D).toBe(0xFE);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement D and set the ZERO and SUB flags', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -680,11 +680,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().D).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.D).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement D and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -697,11 +697,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().D).toBe(0x0F);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.D).toBe(0x0F);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement D and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -714,11 +714,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().D).toBe(0xFF);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.D).toBe(0xFF);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -731,9 +731,9 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getRegisters().D).toBe(0xF3);
-          expect(cpu.getCycles()).toBe(8);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).registers.D).toBe(0xF3);
+          expect((<any>cpu).cycles).toBe(8);
         }));
       });
 
@@ -748,9 +748,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0x2B);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x2B);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -763,8 +763,8 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should perform a relative jump backwards', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -775,8 +775,8 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0xFB);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0xFB);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -796,10 +796,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x107);
-          expect(cpu.getRegisters().HL).toBe(0x9028);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF);
-          expect(cpu.getCycles()).toBe(32);
+          expect((<any>cpu).registers.PC).toBe(0x107);
+          expect((<any>cpu).registers.HL).toBe(0x9028);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(32);
         }));
 
         it('should add DE to HL and store the result in HL, set CARRY', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -817,10 +817,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x107);
-          expect(cpu.getRegisters().HL).toBe(0x0000);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(32);
+          expect((<any>cpu).registers.PC).toBe(0x107);
+          expect((<any>cpu).registers.HL).toBe(0x0000);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(32);
         }));
       });
 
@@ -837,10 +837,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().DE).toBe(0xC000);
-          expect(cpu.getRegisters().A).toBe(0x12);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.DE).toBe(0xC000);
+          expect((<any>cpu).registers.A).toBe(0x12);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -856,9 +856,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().DE).toBe(0xBFFF);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.DE).toBe(0xBFFF);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -873,11 +873,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().E).toBe(0x01);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.E).toBe(0x01);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment E and set the HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -890,11 +890,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().E).toBe(0x10);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.E).toBe(0x10);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment E and set the ZERO and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -907,11 +907,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().E).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.E).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -926,11 +926,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().E).toBe(0xFE);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.E).toBe(0xFE);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement E and set the ZERO and SUB flags', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -943,11 +943,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().E).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.E).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement E and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -960,11 +960,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().E).toBe(0x0F);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.E).toBe(0x0F);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement E and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -977,11 +977,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().E).toBe(0xFF);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.E).toBe(0xFF);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -994,9 +994,9 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getRegisters().E).toBe(0xF3);
-          expect(cpu.getCycles()).toBe(8);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).registers.E).toBe(0xF3);
+          expect((<any>cpu).cycles).toBe(8);
         }));
       });
 
@@ -1012,9 +1012,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0x40);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x40);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should perform rra', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1028,9 +1028,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0xC0);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0xC0);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
     });
@@ -1046,8 +1046,8 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should perform a relative jump backwards', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1059,8 +1059,8 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0xFB);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0xFB);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should not perform a relative jump', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1072,8 +1072,8 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getCycles()).toBe(8);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).cycles).toBe(8);
         }));
       });
 
@@ -1087,9 +1087,9 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().HL).toBe(0xC0DE);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.HL).toBe(0xC0DE);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -1108,11 +1108,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getRegisters().A).toBe(0x69);
-          expect(cpu.getRegisters().HL).toBe(0xC001);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).registers.A).toBe(0x69);
+          expect((<any>cpu).registers.HL).toBe(0xC001);
           expect(memory.getByteAt(0xC000)).toBe(0x69);
-          expect(cpu.getCycles()).toBe(28);
+          expect((<any>cpu).cycles).toBe(28);
         }));
       });
 
@@ -1128,9 +1128,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().HL).toBe(0x0002);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.HL).toBe(0x0002);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -1145,11 +1145,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().H).toBe(0x01);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.H).toBe(0x01);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment H and set the HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1162,11 +1162,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().H).toBe(0x10);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.H).toBe(0x10);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment H and set the ZERO and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1179,11 +1179,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().H).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.H).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -1198,11 +1198,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().H).toBe(0xFE);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.H).toBe(0xFE);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement H and set the ZERO and SUB flags', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1215,11 +1215,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().H).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.H).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement H and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1232,11 +1232,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().H).toBe(0x0F);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.H).toBe(0x0F);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement H and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1249,11 +1249,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().H).toBe(0xFF);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.H).toBe(0xFF);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -1266,9 +1266,9 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getRegisters().H).toBe(0xF3);
-          expect(cpu.getCycles()).toBe(8);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).registers.H).toBe(0xF3);
+          expect((<any>cpu).cycles).toBe(8);
         }));
       });
 
@@ -1287,9 +1287,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x105);
-          expect(cpu.getRegisters().A).toBe(0x83);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x105);
+          expect((<any>cpu).registers.A).toBe(0x83);
+          expect((<any>cpu).cycles).toBe(20);
         }));
 
         it('should deform DAA operation', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1308,9 +1308,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getRegisters().A).toBe(0x07);
-          expect(cpu.getCycles()).toBe(24);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).registers.A).toBe(0x07);
+          expect((<any>cpu).cycles).toBe(24);
         }));
       });
 
@@ -1324,8 +1324,8 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should perform a relative jump backwards', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1337,8 +1337,8 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0xFB);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0xFB);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should not perform a relative jump', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1350,8 +1350,8 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getCycles()).toBe(8);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).cycles).toBe(8);
         }));
       });
 
@@ -1367,10 +1367,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().HL).toBe(0x1446);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.HL).toBe(0x1446);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -1387,10 +1387,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().HL).toBe(0xC001);
-          expect(cpu.getRegisters().A).toBe(0x56);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.HL).toBe(0xC001);
+          expect((<any>cpu).registers.A).toBe(0x56);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -1406,9 +1406,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().HL).toBe(0x1FFF);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.HL).toBe(0x1FFF);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -1423,11 +1423,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().L).toBe(0x01);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.L).toBe(0x01);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment L and set the HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1440,11 +1440,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().L).toBe(0x10);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.L).toBe(0x10);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment L and set the ZERO and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1457,11 +1457,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().L).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.L).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -1476,11 +1476,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().L).toBe(0xFE);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.L).toBe(0xFE);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement L and set the ZERO and SUB flags', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1493,11 +1493,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().L).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.L).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement L and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1510,11 +1510,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().L).toBe(0x0F);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.L).toBe(0x0F);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement L and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1527,11 +1527,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().L).toBe(0xFF);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.L).toBe(0xFF);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -1544,9 +1544,9 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getRegisters().L).toBe(0xF3);
-          expect(cpu.getCycles()).toBe(8);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).registers.L).toBe(0xF3);
+          expect((<any>cpu).cycles).toBe(8);
         }));
       });
 
@@ -1572,10 +1572,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0xCA);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0xCA);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
     });
@@ -1591,8 +1591,8 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should perform a relative jump backwards', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1604,8 +1604,8 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0xFB);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0xFB);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should not perform a relative jump', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1617,8 +1617,8 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getCycles()).toBe(8);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).cycles).toBe(8);
         }));
       });
 
@@ -1632,9 +1632,9 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().SP).toBe(0xC0DE);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.SP).toBe(0xC0DE);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -1653,11 +1653,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getRegisters().A).toBe(0x50);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).registers.A).toBe(0x50);
           expect(memory.getByteAt(0xC001)).toBe(0x50);
-          expect(cpu.getRegisters().HL).toBe(0xC000);
-          expect(cpu.getCycles()).toBe(28);
+          expect((<any>cpu).registers.HL).toBe(0xC000);
+          expect((<any>cpu).cycles).toBe(28);
         }));
       });
 
@@ -1673,9 +1673,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().SP).toBe(0x0002);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.SP).toBe(0x0002);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -1692,10 +1692,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().HL).toBe(0xC000);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.HL).toBe(0xC000);
           expect(memory.getByteAt(0xC000)).toBe(0x01);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -1712,10 +1712,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().HL).toBe(0xC000);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.HL).toBe(0xC000);
           expect(memory.getByteAt(0xC000)).toBe(0x00);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -1732,10 +1732,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x105);
-          expect(cpu.getRegisters().HL).toBe(0xC000);
+          expect((<any>cpu).registers.PC).toBe(0x105);
+          expect((<any>cpu).registers.HL).toBe(0xC000);
           expect(memory.getByteAt(0xC000)).toBe(0x50);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -1748,9 +1748,9 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x101);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(4);
+          expect((<any>cpu).registers.PC).toBe(0x101);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(4);
         }));
       });
 
@@ -1764,8 +1764,8 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should perform a relative jump backwards', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1777,8 +1777,8 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0xFB);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0xFB);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should not perform a relative jump', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1790,8 +1790,8 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getCycles()).toBe(8);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).cycles).toBe(8);
         }));
       });
 
@@ -1811,10 +1811,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x107);
-          expect(cpu.getRegisters().HL).toBe(0x9028);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF);
-          expect(cpu.getCycles()).toBe(32);
+          expect((<any>cpu).registers.PC).toBe(0x107);
+          expect((<any>cpu).registers.HL).toBe(0x9028);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(32);
         }));
 
         it('should add SP to HL and store the result in HL, set CARRY', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1832,10 +1832,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x107);
-          expect(cpu.getRegisters().HL).toBe(0x0000);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(32);
+          expect((<any>cpu).registers.PC).toBe(0x107);
+          expect((<any>cpu).registers.HL).toBe(0x0000);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(32);
         }));
       });
 
@@ -1852,10 +1852,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().HL).toBe(0xBFFF);
-          expect(cpu.getRegisters().A).toBe(0x3C);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.HL).toBe(0xBFFF);
+          expect((<any>cpu).registers.A).toBe(0x3C);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -1871,9 +1871,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().SP).toBe(0x1FFF);
-          expect(cpu.getCycles()).toBe(20);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.SP).toBe(0x1FFF);
+          expect((<any>cpu).cycles).toBe(20);
         }));
       });
 
@@ -1888,11 +1888,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0x01);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x01);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment A and set the HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1905,11 +1905,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0x10);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x10);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should increment A and set the ZERO and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1922,11 +1922,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -1941,11 +1941,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0xFE);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0xFE);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement A and set the ZERO and SUB flags', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1958,11 +1958,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0x00);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x00);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement A and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1975,11 +1975,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0x0F);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x0F);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
 
         it('should decrement A and set the SUB and HALF flag', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -1992,11 +1992,11 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().A).toBe(0xFF);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0xFF);
           // the CARRY flag is set by default and inc doesn't mess with that flag.
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -2009,9 +2009,9 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x102);
-          expect(cpu.getRegisters().A).toBe(0xF3);
-          expect(cpu.getCycles()).toBe(8);
+          expect((<any>cpu).registers.PC).toBe(0x102);
+          expect((<any>cpu).registers.A).toBe(0xF3);
+          expect((<any>cpu).cycles).toBe(8);
         }));
       });
 
@@ -2024,9 +2024,9 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x101);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.HALF);
-          expect(cpu.getCycles()).toBe(4);
+          expect((<any>cpu).registers.PC).toBe(0x101);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB | CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(4);
         }));
       });
     });

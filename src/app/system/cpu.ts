@@ -1820,14 +1820,6 @@ export class CPU extends Debugger<CpuInfo> {
     this.registers.AF = this.registers.AF & ~flags;
   }
 
-  public getCycles(): number {
-    return this.cycles;
-  }
-
-  public getRegisters(): Registers {
-    return this.registers;
-  }
-
   /**
    * Tick one clock cycle
    */

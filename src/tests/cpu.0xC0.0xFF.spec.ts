@@ -38,9 +38,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1235);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
-          expect(cpu.getCycles()).toBe(32);
+          expect((<any>cpu).registers.PC).toBe(0x1235);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
+          expect((<any>cpu).cycles).toBe(32);
         }));
 
         it('should return', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -56,9 +56,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getCycles()).toBe(44);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).cycles).toBe(44);
         }));
 
         it('should return and load $1337 into BC', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -78,10 +78,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getRegisters().BC).toBe(0x1337);
-          expect(cpu.getCycles()).toBe(56);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).registers.BC).toBe(0x1337);
+          expect((<any>cpu).cycles).toBe(56);
         }));
       });
 
@@ -100,17 +100,17 @@ describe('Test', () => {
 
           cpu.tick();
           cpu.tick();
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
 
           cpu.tick();
-          expect(cpu.getRegisters().BC).toBe(0x1337);
+          expect((<any>cpu).registers.BC).toBe(0x1337);
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x108);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getRegisters().BC).toBe(0xBEEF);
-          expect(cpu.getCycles()).toBe(52);
+          expect((<any>cpu).registers.PC).toBe(0x108);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).registers.BC).toBe(0xBEEF);
+          expect((<any>cpu).cycles).toBe(52);
         }));
       });
 
@@ -125,8 +125,8 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1234);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).registers.PC).toBe(0x1234);
+          expect((<any>cpu).cycles).toBe(16);
         }));
 
         it('should not jump to $1234', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -139,8 +139,8 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -154,8 +154,8 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1234);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).registers.PC).toBe(0x1234);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
 
@@ -171,11 +171,11 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1234);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x1234);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x03);
-          expect(cpu.getCycles()).toBe(24);
+          expect((<any>cpu).cycles).toBe(24);
         }));
 
         it('should not call $1234', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -189,9 +189,9 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -207,12 +207,12 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0xBE);
           expect(memory.getByteAt(0xFFFC)).toBe(0xEF);
-          expect(cpu.getRegisters().BC).toBe(0xBEEF);
-          expect(cpu.getCycles()).toBe(28);
+          expect((<any>cpu).registers.BC).toBe(0xBEEF);
+          expect((<any>cpu).cycles).toBe(28);
         }));
       });
 
@@ -228,9 +228,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
 
@@ -242,11 +242,11 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x00);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x00);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x01);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
 
@@ -264,9 +264,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1235);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
-          expect(cpu.getCycles()).toBe(32);
+          expect((<any>cpu).registers.PC).toBe(0x1235);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
+          expect((<any>cpu).cycles).toBe(32);
         }));
 
         it('should return', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -282,9 +282,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getCycles()).toBe(44);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).cycles).toBe(44);
         }));
 
         it('should return and load $1337 into BC', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -304,10 +304,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getRegisters().BC).toBe(0x1337);
-          expect(cpu.getCycles()).toBe(56);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).registers.BC).toBe(0x1337);
+          expect((<any>cpu).cycles).toBe(56);
         }));
       });
 
@@ -323,9 +323,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getCycles()).toBe(40);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).cycles).toBe(40);
         }));
       });
 
@@ -340,8 +340,8 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1234);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).registers.PC).toBe(0x1234);
+          expect((<any>cpu).cycles).toBe(16);
         }));
 
         it('should not jump to $1234', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -354,8 +354,8 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -371,11 +371,11 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1234);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x1234);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x03);
-          expect(cpu.getCycles()).toBe(24);
+          expect((<any>cpu).cycles).toBe(24);
         }));
 
         it('should not call $1234', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -389,9 +389,9 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.ZERO);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -405,11 +405,11 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1234);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x1234);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x03);
-          expect(cpu.getCycles()).toBe(24);
+          expect((<any>cpu).cycles).toBe(24);
         }));
       });
 
@@ -425,10 +425,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().A).toBe(0x00);
-          expect(cpu.getRegisters().F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.A).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
 
@@ -440,11 +440,11 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x08);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x08);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x01);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
     });
@@ -464,9 +464,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1235);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
-          expect(cpu.getCycles()).toBe(32);
+          expect((<any>cpu).registers.PC).toBe(0x1235);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
+          expect((<any>cpu).cycles).toBe(32);
         }));
 
         it('should return', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -482,9 +482,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getCycles()).toBe(44);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).cycles).toBe(44);
         }));
 
         it('should return and load $1337 into BC', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -504,10 +504,10 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getRegisters().BC).toBe(0x1337);
-          expect(cpu.getCycles()).toBe(56);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).registers.BC).toBe(0x1337);
+          expect((<any>cpu).cycles).toBe(56);
         }));
       });
 
@@ -526,17 +526,17 @@ describe('Test', () => {
 
           cpu.tick();
           cpu.tick();
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
 
           cpu.tick();
-          expect(cpu.getRegisters().DE).toBe(0x1337);
+          expect((<any>cpu).registers.DE).toBe(0x1337);
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x108);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getRegisters().DE).toBe(0xBEEF);
-          expect(cpu.getCycles()).toBe(52);
+          expect((<any>cpu).registers.PC).toBe(0x108);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).registers.DE).toBe(0xBEEF);
+          expect((<any>cpu).cycles).toBe(52);
         }));
       });
 
@@ -551,8 +551,8 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1234);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).registers.PC).toBe(0x1234);
+          expect((<any>cpu).cycles).toBe(16);
         }));
 
         it('should not jump to $1234', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -565,12 +565,22 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
-      describe('0xD3: xxxxx', () => {
+      describe('0xD3: nop', () => {
+        it('should do nothing', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0xD3 // nop
+          ]));
+
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x101);
+          expect((<any>cpu).cycles).toBe(4);
+        }));
       });
 
       describe('0xD4: call nc, xx', () => {
@@ -585,11 +595,11 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1234);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x1234);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x03);
-          expect(cpu.getCycles()).toBe(24);
+          expect((<any>cpu).cycles).toBe(24);
         }));
 
         it('should not call $1234', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -603,9 +613,9 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -621,16 +631,66 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0xBE);
           expect(memory.getByteAt(0xFFFC)).toBe(0xEF);
-          expect(cpu.getRegisters().DE).toBe(0xBEEF);
-          expect(cpu.getCycles()).toBe(28);
+          expect((<any>cpu).registers.DE).toBe(0xBEEF);
+          expect((<any>cpu).cycles).toBe(28);
         }));
       });
 
-      describe('0xD6: xxxxx', () => {
+      describe('0xD6: sub x', () => {
+        it('should subtract $3E from $3E and set the ZERO and SUB flags', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x3E, // ld a, $3E
+            0x3E,
+            0xD6, // sub $3E
+            0x3E
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.A).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.SUB);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should subtract $0F from $3E and set the SUB and HALF flags', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x3E, // ld a, $3E
+            0x3E,
+            0xD6, // sub $0F
+            0x0F
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.A).toBe(0x2F);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should subtract $40 from $3E and set the SUB and CARRY flags', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x3E, // ld a, $3E
+            0x3E,
+            0xD6, // sub $40
+            0x40
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.A).toBe(0xFE);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.SUB | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
       describe('0xD7: rst 10', () => {
@@ -641,11 +701,11 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x10);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x10);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x01);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
 
@@ -663,9 +723,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1235);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
-          expect(cpu.getCycles()).toBe(32);
+          expect((<any>cpu).registers.PC).toBe(0x1235);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
+          expect((<any>cpu).cycles).toBe(32);
         }));
 
         it('should return', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -681,9 +741,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getCycles()).toBe(44);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).cycles).toBe(44);
         }));
 
         it('should return and load $1337 into BC', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -703,14 +763,34 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getRegisters().BC).toBe(0x1337);
-          expect(cpu.getCycles()).toBe(56);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).registers.BC).toBe(0x1337);
+          expect((<any>cpu).cycles).toBe(56);
         }));
       });
 
-      describe('0xD9: xxxxx', () => {
+      describe('0xD9: reti', () => {
+        it('should return and enable the IME', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          const rom = [];
+          rom[0x100] = 0xF3; // di
+          rom[0x101] = 0xCD; // call $1234
+          rom[0x102] = 0x34;
+          rom[0x103] = 0x12;
+          rom[0x1234] = 0xD9; // reti
+          memory.loadROM(rom);
+
+          cpu.tick();
+          expect((<any>cpu).ime).toBe(false);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).ime).toBe(true);
+          expect((<any>cpu).cycles).toBe(44);
+        }));
       });
 
       describe('0xDA: jp c, xx', () => {
@@ -724,8 +804,8 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1234);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).registers.PC).toBe(0x1234);
+          expect((<any>cpu).cycles).toBe(16);
         }));
 
         it('should not jump to $1234', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -738,8 +818,8 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -758,11 +838,11 @@ describe('Test', () => {
           cpu.setFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1234);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x1234);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x03);
-          expect(cpu.getCycles()).toBe(24);
+          expect((<any>cpu).cycles).toBe(24);
         }));
 
         it('should not call $1234', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
@@ -776,9 +856,9 @@ describe('Test', () => {
           cpu.resetFlags(CPU.FLAGS.CARRY);
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getCycles()).toBe(12);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).cycles).toBe(12);
         }));
       });
 
@@ -796,11 +876,11 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x18);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x18);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x01);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
     });
@@ -824,17 +904,17 @@ describe('Test', () => {
 
           cpu.tick();
           cpu.tick();
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
 
           cpu.tick();
-          expect(cpu.getRegisters().HL).toBe(0x1337);
+          expect((<any>cpu).registers.HL).toBe(0x1337);
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x108);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getRegisters().HL).toBe(0xBEEF);
-          expect(cpu.getCycles()).toBe(52);
+          expect((<any>cpu).registers.PC).toBe(0x108);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).registers.HL).toBe(0xBEEF);
+          expect((<any>cpu).cycles).toBe(52);
         }));
       });
 
@@ -859,12 +939,12 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x104);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0xBE);
           expect(memory.getByteAt(0xFFFC)).toBe(0xEF);
-          expect(cpu.getRegisters().HL).toBe(0xBEEF);
-          expect(cpu.getCycles()).toBe(28);
+          expect((<any>cpu).registers.HL).toBe(0xBEEF);
+          expect((<any>cpu).cycles).toBe(28);
         }));
       });
 
@@ -879,11 +959,11 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x20);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x20);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x01);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
 
@@ -902,9 +982,9 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x1234);
-          expect(cpu.getRegisters().HL).toBe(0x1234);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).registers.PC).toBe(0x1234);
+          expect((<any>cpu).registers.HL).toBe(0x1234);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
 
@@ -931,11 +1011,11 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x28);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x28);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x01);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
     });
@@ -957,24 +1037,35 @@ describe('Test', () => {
 
           cpu.tick();
           cpu.tick();
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
 
           cpu.tick();
-          expect(cpu.getRegisters().AF).toBe(0x42B0);
+          expect((<any>cpu).registers.AF).toBe(0x42B0);
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x106);
-          expect(cpu.getRegisters().SP).toBe(0xFFFE);
-          expect(cpu.getRegisters().AF).toBe(0x69B0);
-          expect(cpu.getCycles()).toBe(44);
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect((<any>cpu).registers.SP).toBe(0xFFFE);
+          expect((<any>cpu).registers.AF).toBe(0x69B0);
+          expect((<any>cpu).cycles).toBe(44);
         }));
       });
 
       describe('0xF2: xxxxx', () => {
       });
 
-      describe('0xF3: xxxxx', () => {
+      describe('0xF3: di', () => {
+        it('should disable the IME', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0xF3 // di
+          ]));
+
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x101);
+          expect((<any>cpu).ime).toBe(false);
+          expect((<any>cpu).cycles).toBe(4);
+        }));
       });
 
       describe('0xF4: xxxxx', () => {
@@ -991,12 +1082,12 @@ describe('Test', () => {
           cpu.tick();
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x103);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x69);
           expect(memory.getByteAt(0xFFFC)).toBe(0xB0);
-          expect(cpu.getRegisters().AF).toBe(0x69B0);
-          expect(cpu.getCycles()).toBe(24);
+          expect((<any>cpu).registers.AF).toBe(0x69B0);
+          expect((<any>cpu).cycles).toBe(24);
         }));
       });
 
@@ -1011,11 +1102,11 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x30);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x30);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x01);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
 
@@ -1028,7 +1119,28 @@ describe('Test', () => {
       describe('0xFA: xxxxx', () => {
       });
 
-      describe('0xFB: xxxxx', () => {
+      describe('0xFB: ei', () => {
+        it('should enable the IME on the cycle after ei executes', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0xF3, // di
+            0x00, // nop
+            0xFB, // ei
+            0x00 // nop
+          ]));
+
+          cpu.tick();
+          expect((<any>cpu).ime).toBe(false);
+
+          cpu.tick();
+          cpu.tick();
+          expect((<any>cpu).ime).toBe(false);
+
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).ime).toBe(true);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
       describe('0xFC: xxxxx', () => {
@@ -1048,11 +1160,11 @@ describe('Test', () => {
 
           cpu.tick();
 
-          expect(cpu.getRegisters().PC).toBe(0x38);
-          expect(cpu.getRegisters().SP).toBe(0xFFFC);
+          expect((<any>cpu).registers.PC).toBe(0x38);
+          expect((<any>cpu).registers.SP).toBe(0xFFFC);
           expect(memory.getByteAt(0xFFFD)).toBe(0x01);
           expect(memory.getByteAt(0xFFFC)).toBe(0x01);
-          expect(cpu.getCycles()).toBe(16);
+          expect((<any>cpu).cycles).toBe(16);
         }));
       });
     });
