@@ -172,6 +172,12 @@ export class Memory extends Debugger<MemoryInfo> {
       // bits 4 through 6 of nr52 always return 1
       if(address == IORegisters.SOUND_ENABLE) {
         return (0x70 | this.io[(addr))];
+      }
+
+      // bits 7-1 always return 1, bit 0 returns 0 if the boot rom is enabled and 1 if it is disabled.
+      // since I don't have a boot rom this is essentially always 1
+      if(address === IORegisters.BOOT) {
+        return 0xFF;
       }*/
 
       return this.io[addr];
@@ -287,6 +293,11 @@ export class Memory extends Debugger<MemoryInfo> {
         this.io[addr] = 0xE0| value);
       } else {
         this.io[addr] = value;
+      }
+
+      // can only write to bit 0 of this register
+      if(address === IORegisters.BOOT) {
+        this.io[addr] = 0xFE | (value & 0x01)
       }*/
 
       // TODO: (in bgb) something weird is happening when a value is written to IORegisters.LCDC.

@@ -851,10 +851,13 @@ export class CPU extends Debugger<CpuInfo> {
             this.incrementCycles(4);
             break;
           case 0b110: // di
+            // DI immediately disables IME and cancels any pending enables caused by EI
             this.ime = false;
+            this.pendingEnableIME = false;
             this.incrementCycles(4);
             break;
           case 0b111: // ei
+            // EI takes an extra cycle for the IME to be enabled
             this.pendingEnableIME = true;
             this.incrementCycles(4);
             break;

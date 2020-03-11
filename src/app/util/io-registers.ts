@@ -40,5 +40,6 @@ export class IORegisters {
   public static OBJECT_PALETTE1_DATA = 0xFF49;
   public static WINDOW_Y = 0xFF4A;
   public static WINDOW_X = 0xFF4B;
+  public static BOOT = 0xFF50;
   public static INTERRUPT_ENABLE = 0xFFFF;
 }
