@@ -760,7 +760,7 @@ export class CPU extends Debugger<CpuInfo> {
               this.ime = true;
               this.incrementCycles(16);
               break;
-            case 0b10: // jp (hl)
+            case 0b10: // jp hl
               this.registers.PC = this.registers.HL;
               this.incrementCycles(4);
               break;
@@ -867,59 +867,37 @@ export class CPU extends Debugger<CpuInfo> {
         switch(y) {
           case 0b000: // call nz xx
             if((this.registers.F & CPU.FLAGS.ZERO) !== CPU.FLAGS.ZERO) {
-              this.registers.PC += 2;
-              this.memory.setByteAt(this.registers.SP - 1, (this.registers.PC >> 8) & 0xFF);
-              this.memory.setByteAt(this.registers.SP - 2, (this.registers.PC) & 0xFF);
-
-              this.registers.PC = this.getNextWord() - 2;
-              this.registers.SP -= 2;
-              this.incrementCycles(24);
+              this.call();
             } else {
               this.incrementCycles(12);
+              this.incrementPC(2);
             }
             break;
           case 0b001: // call z xx
             if((this.registers.F & CPU.FLAGS.ZERO) === CPU.FLAGS.ZERO) {
-              this.registers.PC += 2;
-              this.memory.setByteAt(this.registers.SP - 1, (this.registers.PC >> 8) & 0xFF);
-              this.memory.setByteAt(this.registers.SP - 2, (this.registers.PC) & 0xFF);
-
-              this.registers.PC = this.getNextWord() - 2;
-              this.registers.SP -= 2;
-              this.incrementCycles(24);
+              this.call();
             } else {
               this.incrementCycles(12);
+              this.incrementPC(2);
             }
             break;
           case 0b010: // call nc xx
             if((this.registers.F & CPU.FLAGS.CARRY) !== CPU.FLAGS.CARRY) {
-              this.registers.PC += 2;
-              this.memory.setByteAt(this.registers.SP - 1, (this.registers.PC >> 8) & 0xFF);
-              this.memory.setByteAt(this.registers.SP - 2, (this.registers.PC) & 0xFF);
-
-              this.registers.PC = this.getNextWord() - 2;
-              this.registers.SP -= 2;
-              this.incrementCycles(24);
+              this.call();
             } else {
               this.incrementCycles(12);
+              this.incrementPC(2);
             }
             break;
           case 0b011: // call c xx
             if((this.registers.F & CPU.FLAGS.CARRY) === CPU.FLAGS.CARRY) {
-              this.registers.PC += 2;
-              this.memory.setByteAt(this.registers.SP - 1, (this.registers.PC >> 8) & 0xFF);
-              this.memory.setByteAt(this.registers.SP - 2, (this.registers.PC) & 0xFF);
-
-              this.registers.PC = this.getNextWord() - 2;
-              this.registers.SP -= 2;
-              this.incrementCycles(24);
+              this.call();
             } else {
               this.incrementCycles(12);
+              this.incrementPC(2);
             }
             break;
         }
-
-        this.incrementPC(2);
         break;
       case 0b101: // PUSH & various ops
         if(q === 0) { // push [BC, DE, HL, AF]
@@ -929,14 +907,7 @@ export class CPU extends Debugger<CpuInfo> {
           this.incrementCycles(16);
         } else if(q === 1) {
           if(p === 0) { // call xx
-            this.registers.PC += 2;
-            this.memory.setByteAt(this.registers.SP - 1, (this.registers.PC >> 8) & 0xFF);
-            this.memory.setByteAt(this.registers.SP - 2, (this.registers.PC) & 0xFF);
-
-            this.registers.PC = this.getNextWord() - 2;
-            this.registers.SP -= 2;
-            this.incrementCycles(24);
-            this.incrementPC(2);
+            this.call();
           } else { // nop
             this.incrementCycles(4);
           }
@@ -975,6 +946,7 @@ export class CPU extends Debugger<CpuInfo> {
         break;
       case 0b111: // Reset
         this.rst(y * 8);
+        this.incrementCycles(16);
         break;
     }
   }
@@ -1039,6 +1011,18 @@ export class CPU extends Debugger<CpuInfo> {
     }
 
     return value;
+  }
+
+  /**
+   * Store current PC on the stack and redirect PC to the called address.
+   */
+  private call() {
+    this.memory.setByteAt(this.registers.SP - 1, ((this.registers.PC + 2) >> 8) & 0xFF);
+    this.memory.setByteAt(this.registers.SP - 2, ((this.registers.PC + 2)) & 0xFF);
+
+    this.registers.PC = this.getNextWord();
+    this.registers.SP -= 2;
+    this.incrementCycles(24);
   }
 
   /**
