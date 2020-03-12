@@ -1,0 +1,8 @@
+Opcode chart - http://www.pastraiser.com/cpu/gameboy/gameboy_opcodes.html
+Blog post about creating a gameboy emulator - https://cturt.github.io/cinoop.html
+Tutorial about creating a CPU emulator - http://emulator101.com/
+Gameboy CPU Manual - http://marc.rawer.de/Gameboy/Docs/GBCPUman.pdf
+Gameboy Hardware Autoposy part 1 - The CPU - https://www.youtube.com/watch?v=RZUDEaLa5Nw
+Cinoop source code - https://github.com/CTurt/Cinoop
+Gameboy emulator tutorial (even though it claims not to be) - https://realboyemulator.wordpress.com/
+GB ASM tutorial - https://eldred.fr/gb-asm-tutorial/introduction.html

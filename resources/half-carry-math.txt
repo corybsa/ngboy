@@ -1,0 +1,53 @@
+For decrementing, the half carry flag is set if the 4th bit is zero.
+
+Example - 0x10:
+Invert the bits (basically two's compliment):
+ 0x10 = 0001 0000
+~0x10 = 1110 1111
+
+0x10 - 0x01 = 0x0F (0000 1111)
+
+XOR the inverted bits with the original value minus 1
+  1110 1111 (~0x10)
+^ 0000 1111 (0x0F)
+= 1110 0000 (xor)
+
+AND the result of the XOR with 0x10 (0001 0000) to find the 4th bit.
+  1110 0000 (xor)
+& 0001 0000 (0x10)
+= 0000 0000
+     ^--(carry occurred)
+
+////////////////////////////
+Example - 0x18:
+ 0x18 = 0001 1000
+~0x18 = 1110 0111
+
+0x18 - 0x01 = 0x17 (0001 0111)
+
+  1110 0111 (~0x18)
+^ 0001 0111 (0x17)
+= 0000 0111 (xor)
+
+  0000 0111 (xor)
+& 0001 0000 (0x10)
+= 0000 0000
+     ^--(carry occurred)
+
+////////////////////////////
+Example - 0xFF:
+ 0xFF = 1111 1111
+~0xFF = 0000 0000
+
+0xFF - 0x01 = 0xFE (1111 1110)
+
+  0000 0000 (~0xFF)
+^ 1111 1110 (0xFE)
+= 1111 1110 (xor)
+
+  1111 1110 (xor)
+& 0001 0000 (0x10)
+= 0001 0000
+     ^--(no carry)
+
+Formula: (~n ^ (n - 1)) & 0x10

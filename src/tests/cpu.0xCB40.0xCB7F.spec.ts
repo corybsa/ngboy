@@ -12,7 +12,7 @@ function createRom(data) {
   return rom;
 }
 
-describe('Test', () => {
+describe('CPU Op Codes 0xCB40 - 0xCB7F', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [

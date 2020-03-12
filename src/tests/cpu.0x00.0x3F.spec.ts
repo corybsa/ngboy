@@ -12,7 +12,7 @@ function createRom(data) {
   return rom;
 }
 
-describe('Test', () => {
+describe('CPU Op Codes 0x00 - 0x3F', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -25,7 +25,7 @@ describe('Test', () => {
   describe('0x00 - 0x3F', () => {
     describe('0x00 - 0x0F', () => {
       describe('0x00: nop', () => {
-        it('should increment PC by 1', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+        it('should do nothing', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
           memory.loadROM(createRom([
             0x00 // nop
           ]));

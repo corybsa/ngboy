@@ -87,10 +87,13 @@ export class CPU extends Debugger<CpuInfo> {
 
   private registers = new Registers();
 
-  private ime = true;
+  private ime = false;
   private pendingEnableIME = false;
-  private haltBug = false;
   private isStopped = false;
+
+  private isHalted = false;
+  private haltBug = false;
+  private haltSkip = false;
 
   private cycles = 0;
   private cyclesSinceLastSync = 0;
@@ -184,6 +187,11 @@ export class CPU extends Debugger<CpuInfo> {
    * @param opCode The op code to decode
    */
   private decode(opCode: number) {
+    if(this.haltBug) {
+      this.registers.PC--;
+      this.haltBug = false;
+    }
+
     if(opCode !== 0xCB) {
       const x = opCode >> 6;
       const y = (opCode & 0b00111000) >> 3;
@@ -1707,17 +1715,33 @@ export class CPU extends Debugger<CpuInfo> {
    * Halt the CPU.
    */
   private halt() {
-    const flags = this.memory.getByteAt(IORegisters.INTERRUPT_FLAGS);
-    const ie = this.memory.getByteAt(IORegisters.INTERRUPT_ENABLE);
+    const flags = this.getIF();
+    const ie = this.getIE();
 
     if(this.ime) {
-      this.isStopped = true;
+      /*
+        HALT executed normally. CPU stops executing instructions until (IE & IF & 1F) != 0. When
+        a flag in IF is set and the corresponding IE flag is also set, the CPU jumps to the interrupt
+        vector. The return address pushed to the stack is the next instruction to the HALT, not the
+        HALT itself. The IF flag corresponding to the vector the CPU has jumped in is cleared.
+      */
+      this.isHalted = true;
     } else {
       if((ie & flags & 0x1F) === 0) {
-        this.isStopped = true;
-      }
-
-      if((ie & flags & 0x1F) !== 0) {
+        /*
+          HALT mode is entered. It works like the IME = 1 case, but when an IF flag is set and
+          the corresponding IE flag is also set, the CPU doesn't jump to the interrupt vector, it
+          just continues executing instructions. The IF flags aren't cleared.
+        */
+        this.isHalted = true;
+        this.haltSkip = true;
+      } else {
+        /*
+          HALT mode is not entered. HALT bug occurs: The CPU fails to increase PC when
+          executing the next instruction. The IF flags aren't cleared. This results in weird
+          behaviour.
+        */
+        this.isHalted = false;
         this.haltBug = true;
       }
     }
@@ -1728,9 +1752,12 @@ export class CPU extends Debugger<CpuInfo> {
    * @param n The amount to increment PC.
    */
   private incrementPC(n: number) {
-    if(!this.haltBug) {
-      this.registers.PC += n;
-    }
+    /*if(this.haltBug) {
+      n--;
+      this.haltBug = false;
+    }*/
+
+    this.registers.PC += n;
   }
 
   /**
@@ -1789,6 +1816,7 @@ export class CPU extends Debugger<CpuInfo> {
    * @param vector The address to reset to.
    */
   private serviceInterrupt(interrupt: number, vector: number) {
+    // clear the flag
     this.memory.setByteAt(IORegisters.INTERRUPT_FLAGS, this.getIF() & ~interrupt);
 
     // the IME is really a flag saying 'enable/disable jumps to interrupt vectors.'
@@ -1798,8 +1826,9 @@ export class CPU extends Debugger<CpuInfo> {
 
     this.ime = false;
     this.isStopped = false;
+    this.isHalted = false;
 
-    // he GameBoy takes 20 clock cycles to dispatch an interrupt
+    // the GameBoy takes 20 clock cycles to dispatch an interrupt
     this.incrementCycles(20);
   }
 
@@ -1831,7 +1860,25 @@ export class CPU extends Debugger<CpuInfo> {
    * Tick one clock cycle
    */
   public tick() {
-    this.decode(this.memory.getByteAt(this.registers.PC++));
+    const flags = this.getIF();
+    const ie = this.getIE();
+
+    const effectiveIme = this.ime;
+
+    if(this.pendingEnableIME) {
+      this.ime = true;
+      this.pendingEnableIME = false;
+    }
+
+    if(this.isHalted && effectiveIme && (ie & flags & 0x1F) !== 0) {
+      this.isHalted = false;
+
+      if(!this.haltSkip) {
+        this.checkInterrupts();
+      }
+    } else {
+      this.decode(this.memory.getByteAt(this.registers.PC++));
+    }
 
     /*if(this.isStopped) {
       const flags = this.memory.getByteAt(IORegisters.INTERRUPT_FLAGS);
@@ -1888,7 +1935,7 @@ export class CPU extends Debugger<CpuInfo> {
     this.memory.setByteAt(IORegisters.TIMER, 0x00);
     this.memory.setByteAt(IORegisters.TIMER_MODULO, 0x00);
     this.memory.setByteAt(IORegisters.TIMER_CONTROL, 0x00);
-    this.memory.setByteAt(IORegisters.INTERRUPT_FLAGS, 0xE1);
+    this.memory.setByteAt(IORegisters.INTERRUPT_FLAGS, 0xE0);
     this.memory.setByteAt(IORegisters.SOUND1_SWEEP, 0x80);
     this.memory.setByteAt(IORegisters.SOUND1_LENGTH_WAVE, 0xBF);
     this.memory.setByteAt(IORegisters.SOUND1_ENVELOPE, 0xF3);
