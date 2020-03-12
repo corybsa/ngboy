@@ -52,16 +52,16 @@ import { Injectable } from '@angular/core';
  */
 @Injectable()
 export class Memory extends Debugger<MemoryInfo> {
-  private cartridge: number[] = new Array(0x800000).fill(0);
-  private vram: number[] = new Array(0x2000).fill(Math.floor(Math.random() * 256));
-  private sram: number[] = new Array(0x8000).fill(Math.floor(Math.random() * 256));
-  private wram: number[] = new Array(0x2000).fill(Math.floor(Math.random() * 256));
-  private eram: number[] = new Array(0x1E00).fill(Math.floor(Math.random() * 256));
-  private oam: number[] = new Array(0xA0).fill(Math.floor(Math.random() * 256));
-  private fea0_feff: number[] = new Array(0x60).fill(Math.floor(Math.random() * 256));
-  private io: number[] = new Array(0x80).fill(Math.floor(Math.random() * 256));
-  private hram: number[] = new Array(0x7F).fill(Math.floor(Math.random() * 256));
-  private ie: number[] = new Array(1).fill(Math.floor(Math.random() * 256));
+  private cartridge: number[];
+  private readonly vram: number[];
+  private readonly sram: number[];
+  private readonly wram: number[];
+  private readonly eram: number[];
+  private readonly oam: number[];
+  private readonly fea0_feff: number[];
+  private readonly io: number[];
+  private readonly hram: number[];
+  private readonly ie: number[];
   private watch: number[] = [];
 
   private currentRomBank = 1;
@@ -69,6 +69,17 @@ export class Memory extends Debugger<MemoryInfo> {
 
   constructor() {
     super();
+
+    this.cartridge = new Array(0x800000).fill(0);
+    this.vram = new Array(0x2000).fill(Math.floor(Math.random() * 256));
+    this.sram = new Array(0x8000).fill(Math.floor(Math.random() * 256));
+    this.wram = new Array(0x2000).fill(Math.floor(Math.random() * 256));
+    this.eram = new Array(0x1E00).fill(Math.floor(Math.random() * 256));
+    this.oam = new Array(0xA0).fill(Math.floor(Math.random() * 256));
+    this.fea0_feff = new Array(0x60).fill(Math.floor(Math.random() * 256));
+    this.io = new Array(0x80).fill(Math.floor(Math.random() * 256));
+    this.hram = new Array(0x7F).fill(Math.floor(Math.random() * 256));
+    this.ie = new Array(1).fill(Math.floor(Math.random() * 256));
 
     this.emit();
   }

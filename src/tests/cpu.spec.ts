@@ -35,7 +35,6 @@ describe('CPU Op Codes 0x40 - 0x7F', () => {
     });
 
     describe('Memory', () => {
-      // TODO: why are default values still random?
       it('should default ($FF0F) to 0xE0', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
         expect(memory.getByteAt(IORegisters.INTERRUPT_FLAGS)).toBe(0xE0);
       }));

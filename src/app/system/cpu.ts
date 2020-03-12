@@ -102,12 +102,7 @@ export class CPU extends Debugger<CpuInfo> {
   constructor(private memory: Memory) {
     super();
 
-    this.registers.AF = 0x01B0;
-    this.registers.BC = 0x0013;
-    this.registers.DE = 0x00D8;
-    this.registers.HL = 0x014D;
-    this.registers.SP = 0xFFFE;
-    this.registers.PC = 0x0100;
+    this.reset();
 
     this.emit();
   }
