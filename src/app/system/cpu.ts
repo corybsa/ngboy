@@ -1752,11 +1752,6 @@ export class CPU extends Debugger<CpuInfo> {
    * @param n The amount to increment PC.
    */
   private incrementPC(n: number) {
-    /*if(this.haltBug) {
-      n--;
-      this.haltBug = false;
-    }*/
-
     this.registers.PC += n;
   }
 
