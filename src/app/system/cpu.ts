@@ -897,6 +897,13 @@ export class CPU extends Debugger<CpuInfo> {
               this.incrementPC(2);
             }
             break;
+          case 0b100: // nop
+          case 0b101: // nop
+          case 0b110: // nop
+          case 0b111: // nop
+            // nop
+            this.incrementCycles(4);
+            break;
         }
         break;
       case 0b101: // PUSH & various ops
