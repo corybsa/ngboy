@@ -2,6 +2,8 @@ import { inject, TestBed } from '@angular/core/testing';
 import { CPU } from '../app/system/cpu';
 import { Memory } from '../app/system/memory';
 
+const mem = new Memory();
+
 function createRom(data) {
   const rom = [];
 
@@ -12,12 +14,12 @@ function createRom(data) {
   return rom;
 }
 
-describe('CPU Op Codes 0x00 - 0x3F', () => {
+describe('CPU Op Codes 0x80 - 0xBF', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         CPU,
-        Memory
+        { provide: Memory, useValue: mem }
       ]
     });
   });

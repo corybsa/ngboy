@@ -3,6 +3,8 @@ import { CPU } from '../app/system/cpu';
 import { Memory } from '../app/system/memory';
 import { IORegisters } from '../app/util/io-registers';
 
+const mem = new Memory();
+
 function createRom(data) {
   const rom = [];
 
@@ -13,12 +15,12 @@ function createRom(data) {
   return rom;
 }
 
-describe('CPU Op Codes 0x40 - 0x7F', () => {
+describe('CPU Op Codes 0x80 - 0xBF', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
         CPU,
-        Memory
+        { provide: Memory, useValue: mem }
       ]
     });
   });
@@ -841,22 +843,124 @@ describe('CPU Op Codes 0x40 - 0x7F', () => {
     });
 
     describe('0x70 - 0x7F', () => {
-      describe('0x70: xxxxx', () => {
+      describe('0x70: ld (hl), b', () => {
+        it('should load the value of B into the value in memory pointed to by HL', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, 0xC000
+            0x00,
+            0xC0,
+            0x06, // ld b, $42
+            0x42,
+            0x70 // ld (hl), b
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect(memory.getByteAt(0xC000)).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
       });
 
-      describe('0x71: xxxxx', () => {
+      describe('0x71: ld (hl), c', () => {
+        it('should load the value of C into the value in memory pointed to by HL', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, 0xC000
+            0x00,
+            0xC0,
+            0x0E, // ld c, $42
+            0x42,
+            0x71 // ld (hl), c
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect(memory.getByteAt(0xC000)).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
       });
 
-      describe('0x72: xxxxx', () => {
+      describe('0x72: ld (hl), d', () => {
+        it('should load the value of D into the value in memory pointed to by HL', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, 0xC000
+            0x00,
+            0xC0,
+            0x16, // ld d, $42
+            0x42,
+            0x72 // ld (hl), d
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect(memory.getByteAt(0xC000)).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
       });
 
-      describe('0x73: xxxxx', () => {
+      describe('0x73: ld (hl), e', () => {
+        it('should load the value of E into the value in memory pointed to by HL', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, 0xC000
+            0x00,
+            0xC0,
+            0x1E, // ld e, $42
+            0x42,
+            0x73 // ld (hl), e
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect(memory.getByteAt(0xC000)).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
       });
 
-      describe('0x74: xxxxx', () => {
+      describe('0x74: ld (hl), h', () => {
+        it('should load the value of H into the value in memory pointed to by HL', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, 0xC000
+            0x00,
+            0xC0,
+            0x74 // ld (hl), h
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect(memory.getByteAt(0xC000)).toBe(0xC0);
+          expect((<any>cpu).cycles).toBe(20);
+        }));
       });
 
-      describe('0x75: xxxxx', () => {
+      describe('0x75: ld (hl), l', () => {
+        it('should load the value of L into the value in memory pointed to by HL', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, 0xC000
+            0x00,
+            0xC0,
+            0x75 // ld (hl), l
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect(memory.getByteAt(0xC000)).toBe(0x00);
+          expect((<any>cpu).cycles).toBe(20);
+        }));
       });
 
       describe('0x76: halt', () => {
@@ -981,28 +1085,147 @@ describe('CPU Op Codes 0x40 - 0x7F', () => {
         // TODO: test interrupt calls
       });
 
-      describe('0x77: xxxxx', () => {
+      describe('0x77: ld (hl), a', () => {
+        it('should load the value of A into the value in memory pointed to by HL', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, 0xC000
+            0x00,
+            0xC0,
+            0x3E, // ld a, $42
+            0x42,
+            0x77 // ld (hl), a
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x106);
+          expect(memory.getByteAt(0xC000)).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
       });
 
-      describe('0x78: xxxxx', () => {
+      describe('0x78: ld a, b', () => {
+        it('should load the value of B into A', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x06, // ld b, $42
+            0x42,
+            0x78 // ld a, b
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(12);
+        }));
       });
 
-      describe('0x79: xxxxx', () => {
+      describe('0x79: ld a, c', () => {
+        it('should load the value of C into A', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x0E, // ld c, $42
+            0x42,
+            0x79 // ld a, c
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(12);
+        }));
       });
 
-      describe('0x7A: xxxxx', () => {
+      describe('0x7A: ld a, d', () => {
+        it('should load the value of D into A', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x16, // ld d, $42
+            0x42,
+            0x7A // ld a, d
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(12);
+        }));
       });
 
-      describe('0x7B: xxxxx', () => {
+      describe('0x7B: ld a, e', () => {
+        it('should load the value of E into A', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x1E, // ld e, $42
+            0x42,
+            0x7B // ld a, e
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(12);
+        }));
       });
 
-      describe('0x7C: xxxxx', () => {
+      describe('0x7C: ld a, h', () => {
+        it('should load the value of H into A', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x26, // ld h, $42
+            0x42,
+            0x7C // ld a, h
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(12);
+        }));
       });
 
-      describe('0x7D: xxxxx', () => {
+      describe('0x7D: ld a, l', () => {
+        it('should load the value of L into A', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x2E, // ld l, $42
+            0x42,
+            0x7D // ld a, l
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x103);
+          expect((<any>cpu).registers.A).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(12);
+        }));
       });
 
-      describe('0x7E: xxxxx', () => {
+      describe('0x7E: ld a, (hl)', () => {
+        it('should load the value at memory address pointed to by HL into A', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, $C000
+            0x00,
+            0xC0,
+            0x7E // ld a, (hl)
+          ]));
+
+          memory.setByteAt(0xC000, 0x42);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.A).toBe(0x42);
+          expect((<any>cpu).cycles).toBe(20);
+        }));
       });
 
       describe('0x7F: nop', () => {

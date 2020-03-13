@@ -4,6 +4,8 @@ import { Subscription } from 'rxjs';
 import { CpuInfo } from '../models/cpu-info.model';
 import { MemoryInfo } from '../models/memory-info.model';
 import { Injectable } from '@angular/core';
+import { GPU } from './gpu';
+import { GpuInfo } from '../models/gpu-info.model';
 
 @Injectable()
 export class GameBoy {
@@ -11,16 +13,19 @@ export class GameBoy {
 
   private cpuInfo: CpuInfo;
   private memoryInfo: MemoryInfo;
+  private gpuInfo: GpuInfo;
 
   public debuggerEnabled = false;
 
-  constructor(private cpu: CPU, private memory: Memory) {
+  constructor(private cpu: CPU, private memory: Memory, private gpu: GPU) {
     const cpuObserver = this.cpu.subscribe();
     const memObserver = this.memory.subscribe();
+    const gpuObserver = this.gpu.subscribe();
 
     this.subscriptions.push(
       cpuObserver.subscribe(res => this.cpuInfo = res),
-      memObserver.subscribe(res => this.memoryInfo = res)
+      memObserver.subscribe(res => this.memoryInfo = res),
+      gpuObserver.subscribe(res => this.gpuInfo = res)
     );
   }
 
@@ -49,6 +54,10 @@ export class GameBoy {
 
   public getMemoryInfo(): MemoryInfo {
     return this.memoryInfo;
+  }
+
+  public getGpuInfo(): GpuInfo {
+    return this.gpuInfo;
   }
 
   public getMemoryWatch() {

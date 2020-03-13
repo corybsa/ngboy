@@ -6,6 +6,7 @@ import { Injectable } from '@angular/core';
 import { IORegisters } from '../util/io-registers';
 import { Interrupts } from '../util/interrupts';
 import { Timers } from './timers';
+import { LCD } from './lcd';
 
 /**
  * <h3>Description</h3>
@@ -639,11 +640,11 @@ export class CPU extends Debugger<CpuInfo> {
       case 0b111: // cp
         if(z !== 0b110) {
           // cp a, [b, c, d, e, h, l, a]
-          this.registers.A = this.cp(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
+          this.cp(this.registers.A, this.registers[this.get8BitRegisterName(z)]);
           this.incrementCycles(4);
         } else {
           // cp a, (hl)
-          this.registers.A = this.cp(this.registers.A, this.memory.getByteAt(this.registers.HL));
+          this.cp(this.registers.A, this.memory.getByteAt(this.registers.HL));
           this.incrementCycles(8);
         }
         break;
@@ -947,7 +948,7 @@ export class CPU extends Debugger<CpuInfo> {
             this.registers.A = this.or(this.registers.A, this.getNextByte());
             break;
           case 0b111: // cp x
-            this.registers.A = this.cp(this.registers.A, this.getNextByte());
+            this.cp(this.registers.A, this.getNextByte());
             break;
         }
 
@@ -1322,7 +1323,7 @@ export class CPU extends Debugger<CpuInfo> {
    * @param num1 The first value to compare
    * @param num2 The second value to compare
    */
-  public cp(num1: number, num2: number): number {
+  public cp(num1: number, num2: number) {
     if(num1 === num2) {
       this.setFlags(CPU.FLAGS.ZERO);
     } else {
@@ -1342,8 +1343,6 @@ export class CPU extends Debugger<CpuInfo> {
     }
 
     this.setFlags(CPU.FLAGS.SUB);
-
-    return num1;
   }
 
   /**
@@ -1847,20 +1846,28 @@ export class CPU extends Debugger<CpuInfo> {
   }
 
   /**
-   * Tick one clock cycle
+   * Fetch, decode and execute one instruction
+   * @return the amount of cycles the instruction took
    */
-  public tick() {
+  public tick(): number {
     const flags = this.getIF();
     const ie = this.getIE();
-
+    const shouldServiceInterrupts = (ie & flags & 0x1F) !== 0;
     const effectiveIme = this.ime;
 
+    if(this.cycles >= (CPU.FREQUENCY / LCD.FREQUENCY)) {
+      this.cycles = 0;
+    }
+
+    // this.synchronize();
+
+    // the EI instruction enables the IME the following cycle to its execution
     if(this.pendingEnableIME) {
       this.ime = true;
       this.pendingEnableIME = false;
     }
 
-    if(this.isHalted && effectiveIme && (ie & flags & 0x1F) !== 0) {
+    if(this.isHalted && effectiveIme && shouldServiceInterrupts) {
       this.isHalted = false;
 
       if(!this.haltSkip) {
@@ -1912,6 +1919,7 @@ export class CPU extends Debugger<CpuInfo> {
     }*/
 
     this.emit();
+    return this.lastOpCycles;
   }
 
   public reset() {
