@@ -84,7 +84,7 @@ describe('CPU Op Codes 0x80 - 0xBF', () => {
           memory.loadROM(createRom([
             0x0E, // ld c, $85
             0x85,
-            0xCB, // rlc b
+            0xCB, // rlc c
             0x01
           ]));
 
@@ -101,7 +101,7 @@ describe('CPU Op Codes 0x80 - 0xBF', () => {
           memory.loadROM(createRom([
             0x0E, // ld c, $00
             0x00,
-            0xCB, // rlc b
+            0xCB, // rlc c
             0x01
           ]));
 
@@ -118,7 +118,7 @@ describe('CPU Op Codes 0x80 - 0xBF', () => {
           memory.loadROM(createRom([
             0x0E, // ld c, $01
             0x01,
-            0xCB, // rlc b
+            0xCB, // rlc c
             0x01
           ]));
 
@@ -296,7 +296,7 @@ describe('CPU Op Codes 0x80 - 0xBF', () => {
           memory.loadROM(createRom([
             0x2E, // ld l, $85
             0x85,
-            0xCB, // rlc b
+            0xCB, // rlc c
             0x05
           ]));
 
@@ -313,7 +313,7 @@ describe('CPU Op Codes 0x80 - 0xBF', () => {
           memory.loadROM(createRom([
             0x2E, // ld l, $00
             0x00,
-            0xCB, // rlc b
+            0xCB, // rlc c
             0x05
           ]));
 
@@ -330,7 +330,7 @@ describe('CPU Op Codes 0x80 - 0xBF', () => {
           memory.loadROM(createRom([
             0x2E, // ld l, $01
             0x01,
-            0xCB, // rlc b
+            0xCB, // rlc c
             0x05
           ]));
 
@@ -459,54 +459,624 @@ describe('CPU Op Codes 0x80 - 0xBF', () => {
         }));
       });
 
-      describe('0xCB08: xxxxx', () => {
+      describe('0xCB08: rrc b', () => {
+        it('should rotate B right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x06, // ld b, $01
+            0x01,
+            0xCB, // rrc b
+            0x08
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.B).toBe(0x80);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate B right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x06, // ld b, $00
+            0x00,
+            0xCB, // rrc b
+            0x08
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.B).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB09: xxxxx', () => {
+      describe('0xCB09: rrc c', () => {
+        it('should rotate C right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x0E, // ld c, $01
+            0x01,
+            0xCB, // rrc c
+            0x09
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.C).toBe(0x80);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate C right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x0E, // ld c, $00
+            0x00,
+            0xCB, // rrc c
+            0x09
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.C).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB0A: xxxxx', () => {
+      describe('0xCB0A: rrc d', () => {
+        it('should rotate D right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x16, // ld d, $01
+            0x01,
+            0xCB, // rrc d
+            0x0A
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.D).toBe(0x80);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate D right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x16, // ld d, $00
+            0x00,
+            0xCB, // rrc d
+            0x0A
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.D).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB0B: xxxxx', () => {
+      describe('0xCB0B: rrc e', () => {
+        it('should rotate E right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x1E, // ld e, $01
+            0x01,
+            0xCB, // rrc e
+            0x0B
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.E).toBe(0x80);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate E right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x1E, // ld e, $00
+            0x00,
+            0xCB, // rrc e
+            0x0B
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.E).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB0C: xxxxx', () => {
+      describe('0xCB0C: rrc h', () => {
+        it('should rotate H right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x26, // ld h, $01
+            0x01,
+            0xCB, // rrc b
+            0x0C
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.H).toBe(0x80);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate H right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x26, // ld h, $00
+            0x00,
+            0xCB, // rrc b
+            0x0C
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.H).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB0D: xxxxx', () => {
+      describe('0xCB0D: rrc l', () => {
+        it('should rotate L right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x2E, // ld l, $01
+            0x01,
+            0xCB, // rrc l
+            0x0D
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.L).toBe(0x80);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate L right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x2E, // ld l, $00
+            0x00,
+            0xCB, // rrc l
+            0x0D
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.L).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB0E: xxxxx', () => {
+      describe('0xCB0E: rrc (hl)', () => {
+        it('should rotate the value in memory pointed to by HL right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, $C000
+            0x00,
+            0xC0,
+            0xCB, // rrc (hl)
+            0x0E
+          ]));
+
+          memory.setByteAt(0xC000, 0x01);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x105);
+          expect(memory.getByteAt(0xC000)).toBe(0x80);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
+
+        it('should rotate the value in memory pointed to by HL right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, $C000
+            0x00,
+            0xC0,
+            0xCB, // rrc (hl)
+            0x0E
+          ]));
+
+          memory.setByteAt(0xC000, 0x00);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x105);
+          expect(memory.getByteAt(0xC000)).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
       });
 
-      describe('0xCB0F: xxxxx', () => {
+      describe('0xCB0F: rrc a', () => {
+        it('should rotate A right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x3E, // ld a, $01
+            0x01,
+            0xCB, // rrc a
+            0x0F
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.A).toBe(0x80);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate A right with carry', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x3E, // ld a, $00
+            0x00,
+            0xCB, // rrc a
+            0x0F
+          ]));
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.A).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
     });
 
     describe('0xCB10 - 0xCB1F', () => {
-      describe('0xCB10: xxxxx', () => {
+      describe('0xCB10: rl b', () => {
+        it('should rotate B left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x06, // ld b, $80
+            0x80,
+            0xCB, // rl b
+            0x10
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.B).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate B left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x06, // ld b, $11
+            0x11,
+            0xCB, // rl b
+            0x10
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.B).toBe(0x22);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB11: xxxxx', () => {
+      describe('0xCB11: rl c', () => {
+        it('should rotate C left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x0E, // ld c, $80
+            0x80,
+            0xCB, // rl c
+            0x11
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.C).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate C left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x0E, // ld c, $11
+            0x11,
+            0xCB, // rl c
+            0x11
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.C).toBe(0x22);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB12: xxxxx', () => {
+      describe('0xCB12: rl d', () => {
+        it('should rotate D left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x16, // ld d, $80
+            0x80,
+            0xCB, // rl d
+            0x12
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.D).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate D left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x16, // ld d, $11
+            0x11,
+            0xCB, // rl d
+            0x12
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.D).toBe(0x22);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB13: xxxxx', () => {
+      describe('0xCB13: rl e', () => {
+        it('should rotate E left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x1E, // ld e, $80
+            0x80,
+            0xCB, // rl e
+            0x13
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.E).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate E left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x1E, // ld e, $11
+            0x11,
+            0xCB, // rl e
+            0x13
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.E).toBe(0x22);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB14: xxxxx', () => {
+      describe('0xCB14: rl h', () => {
+        it('should rotate H left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x26, // ld h, $80
+            0x80,
+            0xCB, // rl h
+            0x14
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.H).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate H left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x26, // ld h, $11
+            0x11,
+            0xCB, // rl h
+            0x14
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.H).toBe(0x22);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB15: xxxxx', () => {
+      describe('0xCB15: rl l', () => {
+        it('should rotate L left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x2E, // ld l, $80
+            0x80,
+            0xCB, // rl l
+            0x15
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.L).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate L left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x2E, // ld l, $11
+            0x11,
+            0xCB, // rl l
+            0x15
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.L).toBe(0x22);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
-      describe('0xCB16: xxxxx', () => {
+      describe('0xCB16: rl (hl)', () => {
+        it('should rotate the value in memory pointed to by HL left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, $C000
+            0x00,
+            0xC0,
+            0xCB, // rl (hl)
+            0x16
+          ]));
+
+          memory.setByteAt(0xC000, 0x80);
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x105);
+          expect(memory.getByteAt(0xC000)).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
+
+        it('should rotate the value in memory pointed to by HL left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, $C000
+            0x00,
+            0xC0,
+            0xCB, // rl (hl)
+            0x16
+          ]));
+
+          memory.setByteAt(0xC000, 0x11);
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x105);
+          expect(memory.getByteAt(0xC000)).toBe(0x22);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
       });
 
-      describe('0xCB17: xxxxx', () => {
+      describe('0xCB17: rl a', () => {
+        it('should rotate A left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x3E, // ld a, $80
+            0x80,
+            0xCB, // rl a
+            0x17
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.A).toBe(0x00);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.ZERO | CPU.FLAGS.HALF | CPU.FLAGS.CARRY);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
+
+        it('should rotate A left', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x3E, // ld a, $11
+            0x11,
+            0xCB, // rl a
+            0x17
+          ]));
+
+          cpu.resetFlags(CPU.FLAGS.CARRY);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x104);
+          expect((<any>cpu).registers.A).toBe(0x22);
+          expect((<any>cpu).registers.F).toBe(CPU.FLAGS.HALF);
+          expect((<any>cpu).cycles).toBe(16);
+        }));
       });
 
       describe('0xCB18: xxxxx', () => {
