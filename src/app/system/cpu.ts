@@ -221,7 +221,7 @@ export class CPU extends Debugger<CpuInfo> {
     const y = (opCode & 0b00111000) >> 3;
     const z = opCode & 0b00000111;
 
-    console.log(`0xCB${opCode.toString(16).toUpperCase().padStart(4, '0')}`, opCode.toString(2).padStart(8, '0'), x, y, z);
+    console.log(`0xCB${opCode.toString(16).toUpperCase().padStart(2, '0')}`, opCode.toString(2).padStart(8, '0'), x, y, z);
 
     switch(x) {
       case 0b00:
@@ -313,8 +313,6 @@ export class CPU extends Debugger<CpuInfo> {
     } else {
       this.incrementCycles(16);
     }
-
-    this.incrementPC(1);
   }
 
   /**
@@ -1842,7 +1840,7 @@ export class CPU extends Debugger<CpuInfo> {
    * @param flags The flags to check.
    */
   public resetFlags(flags: number): void {
-    this.registers.AF = this.registers.AF & ~flags;
+    this.registers.F = this.registers.F & ~flags;
   }
 
   /**
