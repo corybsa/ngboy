@@ -13,7 +13,7 @@ function createRom(data) {
   return rom;
 }
 
-describe('CPU Op Codes 0x40 - 0x7F', () => {
+describe('CPU', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [
@@ -23,23 +23,19 @@ describe('CPU Op Codes 0x40 - 0x7F', () => {
     });
   });
 
-  describe('CPU', () => {
-    describe('Registers', () => {
-      it('should default AF to $01B0', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
-        expect((<any>cpu).registers.AF).toBe(0x01B0);
-      }));
+  describe('Registers', () => {
+    it('should have the correct default values', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+      expect((<any>cpu).registers.AF).toBe(0x01B0);
+      expect((<any>cpu).registers.BC).toBe(0x0013);
+      expect((<any>cpu).registers.DE).toBe(0x00D8);
+      expect((<any>cpu).registers.HL).toBe(0x014D);
+      expect((<any>cpu).registers.SP).toBe(0xFFFE);
+      expect((<any>cpu).registers.PC).toBe(0x100);
+    }));
+  });
 
-      it('should default AF to $01B0', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
-        expect((<any>cpu).registers.AF).toBe(0x01B0);
-      }));
-    });
-
-    describe('Memory', () => {
-      it('should default ($FF0F) to 0xE0', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
-        expect(memory.getByteAt(IORegisters.INTERRUPT_FLAGS)).toBe(0xE0);
-      }));
-
-      /*
+  describe('Memory', () => {
+    it('should have the correct default values', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
       expect(memory.getByteAt(IORegisters.TIMER)).toBe(0x00);
       expect(memory.getByteAt(IORegisters.TIMER_MODULO)).toBe(0x00);
       expect(memory.getByteAt(IORegisters.TIMER_CONTROL)).toBe(0x00);
@@ -73,7 +69,6 @@ describe('CPU Op Codes 0x40 - 0x7F', () => {
       expect(memory.getByteAt(IORegisters.WINDOW_Y)).toBe(0x00);
       expect(memory.getByteAt(IORegisters.WINDOW_X)).toBe(0x00);
       expect(memory.getByteAt(IORegisters.INTERRUPT_ENABLE)).toBe(0x00);
-      */
-    });
+    }));
   });
 });
