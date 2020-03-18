@@ -726,8 +726,25 @@ describe('CPU Op Codes 0x80 - 0xBF', () => {
         }));
       });
 
-      describe('0xCBE6: xxxxx', () => {
+      describe('0xCBE6: set 4, (hl)', () => {
+        it('should set bit 4 to 1 in the value in memory pointed to by HL', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, $C000
+            0x00,
+            0xC0,
+            0xCB, // set 4, (hl)
+            0xE6
+          ]));
 
+          memory.setByteAt(0xC000, 0x00);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x105);
+          expect(memory.getByteAt(0xC000)).toBe(0x10);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
       });
 
       describe('0xCBE7: set 4, a', () => {
@@ -856,7 +873,25 @@ describe('CPU Op Codes 0x80 - 0xBF', () => {
         }));
       });
 
-      describe('0xCBEE: xxxxx', () => {
+      describe('0xCBEE: set 5, (hl)', () => {
+        it('should set bit 5 to 1 in the value in memory pointed to by HL', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, $C000
+            0x00,
+            0xC0,
+            0xCB, // set 5, (hl)
+            0xEE
+          ]));
+
+          memory.setByteAt(0xC000, 0x00);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x105);
+          expect(memory.getByteAt(0xC000)).toBe(0x20);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
       });
 
       describe('0xCBEF: set 5, a', () => {
@@ -987,7 +1022,25 @@ describe('CPU Op Codes 0x80 - 0xBF', () => {
         }));
       });
 
-      describe('0xCBF6: xxxxx', () => {
+      describe('0xCBF6: set 6, (hl)', () => {
+        it('should set bit 6 to 1 in the value in memory pointed to by HL', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, $C000
+            0x00,
+            0xC0,
+            0xCB, // set 6, (hl)
+            0xF6
+          ]));
+
+          memory.setByteAt(0xC000, 0x00);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x105);
+          expect(memory.getByteAt(0xC000)).toBe(0x40);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
       });
 
       describe('0xCBF7: set 6, a', () => {
@@ -1116,7 +1169,25 @@ describe('CPU Op Codes 0x80 - 0xBF', () => {
         }));
       });
 
-      describe('0xCBFE: xxxxx', () => {
+      describe('0xCBFE: set 7, (hl)', () => {
+        it('should set bit 7 to 1 in the value in memory pointed to by HL', inject([CPU, Memory], (cpu: CPU, memory: Memory) => {
+          memory.loadROM(createRom([
+            0x21, // ld hl, $C000
+            0x00,
+            0xC0,
+            0xCB, // set 7, (hl)
+            0xFE
+          ]));
+
+          memory.setByteAt(0xC000, 0x00);
+
+          cpu.tick();
+          cpu.tick();
+
+          expect((<any>cpu).registers.PC).toBe(0x105);
+          expect(memory.getByteAt(0xC000)).toBe(0x80);
+          expect((<any>cpu).cycles).toBe(28);
+        }));
       });
 
       describe('0xCBFF: set 7, a', () => {
