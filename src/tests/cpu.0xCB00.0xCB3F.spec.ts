@@ -1,6 +1,6 @@
 import { inject, TestBed } from '@angular/core/testing';
-import { CPU } from '../app/system/cpu';
-import { Memory } from '../app/system/memory';
+import { CPU } from '../app/game-boy/system/cpu';
+import { Memory } from '../app/game-boy/system/memory';
 
 const mem = new Memory();
 

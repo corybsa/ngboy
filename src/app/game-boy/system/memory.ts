@@ -50,7 +50,9 @@ import { Injectable } from '@angular/core';
  *                        - Special byte of I/O.
  *                        - It's here because of how the CPU works internally.
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class Memory extends Debugger<MemoryInfo> {
   private cartridge: number[];
   private readonly vram: number[];

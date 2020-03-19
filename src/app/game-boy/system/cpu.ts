@@ -74,10 +74,13 @@ import { LCD } from './lcd';
  *     </li>
  * </ul>
  */
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CPU extends Debugger<CpuInfo> {
   // The frequency of the clock in MHz.
   public static FREQUENCY = 4194304;
+  public static readonly LCDC_PERIOD = CPU.FREQUENCY / LCD.FREQUENCY;
 
   public static FLAGS = {
     ZERO:  0b10000000,
@@ -98,6 +101,7 @@ export class CPU extends Debugger<CpuInfo> {
 
   private cycles = 0;
   private cyclesSinceLastSync = 0;
+  private lastSyncTime = 0;
   private lastOpCycles = 0;
 
   constructor(private memory: Memory) {
@@ -195,7 +199,7 @@ export class CPU extends Debugger<CpuInfo> {
       const p = y >> 1;
       const q = y % 2;
 
-      console.log(`0x${opCode.toString(16).toUpperCase().padStart(2, '0')}`, opCode.toString(2).padStart(8, '0'), x, y, z);
+      // console.log(`0x${opCode.toString(16).toUpperCase().padStart(2, '0')}`, opCode.toString(2).padStart(8, '0'), x, y, z);
 
       switch(x) {
         case 0b00:
@@ -216,12 +220,16 @@ export class CPU extends Debugger<CpuInfo> {
     }
   }
 
+  /**
+   * Decode CB-prefixed op code to find out which instruction to execute.
+   * @param opCode The op code to decode
+   */
   private decodeCB(opCode: number) {
     const x = opCode >> 6;
     const y = (opCode & 0b00111000) >> 3;
     const z = opCode & 0b00000111;
 
-    console.log(`0xCB${opCode.toString(16).toUpperCase().padStart(2, '0')}`, opCode.toString(2).padStart(8, '0'), x, y, z);
+    // console.log(`0xCB${opCode.toString(16).toUpperCase().padStart(2, '0')}`, opCode.toString(2).padStart(8, '0'), x, y, z);
 
     switch(x) {
       case 0b00:
@@ -1819,6 +1827,60 @@ export class CPU extends Debugger<CpuInfo> {
     this.incrementCycles(20);
   }
 
+  /**
+   * Keeps the CPU from running as fast as it can. This should keep the frame rate at 60 fps.
+   */
+  private synchronize() {
+    // Our target sleep time is the length in time the previous instruction took.
+    const target = (this.cyclesSinceLastSync * 1000000000) / CPU.FREQUENCY;
+
+    // Get the current nanoseconds since 1970.
+    const nanoSeconds = Date.now() * 1000000;
+
+    // The sleep duration is the previous instruction time plus how long it's been since we last synced.
+    // We subtract the nanoseconds to see if the CPU is running too fast.
+    // If sleepDuration is positive that means that the CPU is running incredibly fast (for GameBoy standards, anyway),
+    //   and we need to slow it down by sleeping.
+    let sleepDuration = target + this.lastSyncTime - nanoSeconds;
+
+    // There's a weird lag during vblank, so we can disable sleep during vblank
+    //   and just process everything as fast as possible to mitigate the lag.
+    // This is probably not the best solution, but it works.
+    if((this.memory.getByteAt(IORegisters.LCD_STATUS) & 0x01) === 1) {
+      sleepDuration = 0;
+    }
+
+    // Check if sleepDuration is between zero and the time it takes to complete a whole frame.
+    if(sleepDuration > 0 && sleepDuration < ((CPU.LCDC_PERIOD * 1000000000) / CPU.FREQUENCY)) {
+      // convert sleepDuration to milliseconds
+      // console.log(`sleeping for ${sleepDuration}ns`);
+      this.sleep(sleepDuration);
+
+      // Need to keep track of how long it's been since we last synced.
+      this.lastSyncTime += target;
+    } else {
+      // we need to know when we last synced.
+      this.lastSyncTime = nanoSeconds;
+    }
+
+    // We only care about the previous instruction, so we can set this to zero and it will be updated
+    // after the next instruction is executed.
+    this.cyclesSinceLastSync = 0;
+  }
+
+  /**
+   * Sleep for {@code duration} nanoseconds.
+   * @param duration Time in nanoseconds to sleep.
+   */
+  private sleep(duration: number) {
+    const date = Date.now() * 1000000000;
+    let currentDate = null;
+
+    do {
+      currentDate = Date.now() * 1000000000;
+    } while((currentDate - date) < duration);
+  }
+
   protected emit() {
     super.emit({
       registers: this.registers
@@ -1847,17 +1909,17 @@ export class CPU extends Debugger<CpuInfo> {
    * Fetch, decode and execute one instruction
    * @return the amount of cycles the instruction took
    */
-  public tick(): number {
+  public async tick(): Promise<number> {
     const flags = this.getIF();
     const ie = this.getIE();
     const shouldServiceInterrupts = (ie & flags & 0x1F) !== 0;
     const effectiveIme = this.ime;
 
-    if(this.cycles >= (CPU.FREQUENCY / LCD.FREQUENCY)) {
+    if(this.cycles >= CPU.LCDC_PERIOD) {
       this.cycles = 0;
     }
 
-    // this.synchronize();
+    this.synchronize();
 
     // the EI instruction enables the IME the following cycle to its execution
     if(this.pendingEnableIME) {
@@ -1871,6 +1933,8 @@ export class CPU extends Debugger<CpuInfo> {
       if(!this.haltSkip) {
         this.checkInterrupts();
       }
+
+      this.incrementCycles(0);
     } else {
       this.decode(this.memory.getByteAt(this.registers.PC++));
     }
@@ -1917,7 +1981,7 @@ export class CPU extends Debugger<CpuInfo> {
     }*/
 
     this.emit();
-    return this.lastOpCycles;
+    return this.cycles;
   }
 
   public reset() {

@@ -1,7 +1,7 @@
 import { inject, TestBed } from '@angular/core/testing';
-import { CPU } from '../app/system/cpu';
-import { Memory } from '../app/system/memory';
-import { IORegisters } from '../app/util/io-registers';
+import { CPU } from '../app/game-boy/system/cpu';
+import { Memory } from '../app/game-boy/system/memory';
+import { IORegisters } from '../app/game-boy/util/io-registers';
 
 const mem = new Memory();
 
