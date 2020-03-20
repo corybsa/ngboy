@@ -28,11 +28,11 @@ export class GPU extends Debugger<GpuInfo> {
   private scanline = 0;
   private ticks = 0;
   private previousCycles = 0;
-  private tiles = new Array(384).fill(new Array(8).fill(new Array(8).fill(0)));
+  private tiles: number[][][];
   private lastFrame = Date.now();
   private framerate = 0;
 
-  private backgroundMap = new Array(LCD.BG_HEIGHT).fill(new Array(LCD.BG_WIDTH).fill(new Array(8).fill(0)));
+  private backgroundMap: number[][][];
 
   constructor(
     private memory: Memory,
