@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { GameBoy } from './system/game-boy';
 
 @Component({
@@ -6,16 +6,21 @@ import { GameBoy } from './system/game-boy';
   templateUrl: './game-boy.component.html',
   styleUrls: ['./game-boy.component.css']
 })
-export class GameBoyComponent implements OnDestroy {
+export class GameBoyComponent implements AfterViewInit, OnDestroy {
   file: any = null;
 
   @ViewChild('addWatchInput', { static: false }) addWatchInput: ElementRef;
+  @ViewChild('lcdScreen', { static: false }) canvas: HTMLCanvasElement;
 
   constructor(
-    private gameBoy: GameBoy
+    public gameBoy: GameBoy
   ) {
     this.gameBoy.toggleDebugger();
     console.log(this.gameBoy);
+  }
+
+  ngAfterViewInit(): void {
+    this.gameBoy.setCanvas(this.canvas);
   }
 
   ngOnDestroy(): void {

@@ -1,6 +1,6 @@
 import { CPU } from './cpu';
 import { Memory } from './memory';
-import { Subscription } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { CpuInfo } from '../models/cpu-info.model';
 import { MemoryInfo } from '../models/memory-info.model';
 import { Injectable } from '@angular/core';
@@ -19,8 +19,10 @@ export class GameBoy {
   private memoryInfo: MemoryInfo;
   private gpuInfo: GpuInfo;
   private lcdInfo: LcdInfo;
+  private canvas: HTMLCanvasElement;
 
   public debuggerEnabled = false;
+  public drawObserver = new BehaviorSubject(null);
 
   constructor(
     private cpu: CPU,
@@ -34,6 +36,12 @@ export class GameBoy {
     const lcdObserver = this.lcd.subscribe();
 
     this.subscriptions.push(
+      this.memory.vramObserver.subscribe(res => {
+        if(res) {
+          this.gpu.updateTiles(res);
+        }
+      }),
+      this.lcd.tileObserver.subscribe(res => this.draw(res)),
       cpuObserver.subscribe(res => this.cpuInfo = res),
       memObserver.subscribe(res => this.memoryInfo = res),
       gpuObserver.subscribe(res => this.gpuInfo = res),
@@ -52,18 +60,60 @@ export class GameBoy {
   }
 
   public tick() {
-    this.cpu.tick().then(cycles => {
+    let cycles = 0;
+    const frameClock = cycles + 70224;
+
+    do {
+      cycles = this.cpu.tick();
       this.gpu.tick(cycles);
-    });
+    } while(cycles < frameClock);
+
+    /*cycles = this.cpu.tick();
+    this.gpu.tick(cycles);*/
   }
 
   public run() {
-    /*window.setInterval(() => {
+    window.setInterval(() => {
       this.tick();
-    }, 1);*/
+    }, 1);
+  }
 
-    for(let i = 0; i < 10000; i++) {
-      this.tick();
+  public setCanvas(canvas: any) {
+    this.canvas = canvas.nativeElement;
+  }
+
+  public draw(tiles: number[]) {
+    if(!this.canvas) {
+      return;
+    }
+
+    const canvas = this.canvas.getContext('2d');
+    let screen;
+
+    if(!canvas) {
+      throw new Error('Canvas context could not be created.');
+    } else {
+      const height = LCD.HEIGHT * LCD.SCALE;
+      const width = LCD.WIDTH * LCD.SCALE;
+      if(canvas.createImageData) {
+        screen = canvas.createImageData(width, height);
+      } else if(canvas.getImageData) {
+        screen = canvas.getImageData(0, 0, width, height);
+      } else {
+        screen = {
+          width: width,
+          height: height,
+          data: new Array(width * height * 4)
+        };
+      }
+
+      const length = screen.data.length;
+
+      for(let i = 0; i < length; i++) {
+        screen.data[i] = tiles[i];
+      }
+
+      canvas.putImageData(screen, 0, 0);
     }
   }
 

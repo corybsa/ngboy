@@ -1058,6 +1058,7 @@ export class CPU extends Debugger<CpuInfo> {
    * @param address The address to jump to.
    */
   private rst(address: number) {
+    console.log(`rst ${address.toString(16)}`);
     this.memory.setByteAt(this.registers.SP - 1, (this.registers.PC >> 8) & 0xFF);
     this.memory.setByteAt(this.registers.SP - 2, this.registers.PC & 0xFF);
     this.registers.SP -= 2;
@@ -1873,11 +1874,11 @@ export class CPU extends Debugger<CpuInfo> {
    * @param duration Time in nanoseconds to sleep.
    */
   private sleep(duration: number) {
-    const date = Date.now() * 1000000000;
+    const date = Date.now();
     let currentDate = null;
 
     do {
-      currentDate = Date.now() * 1000000000;
+      currentDate = Date.now();
     } while((currentDate - date) < duration);
   }
 
@@ -1909,7 +1910,7 @@ export class CPU extends Debugger<CpuInfo> {
    * Fetch, decode and execute one instruction
    * @return the amount of cycles the instruction took
    */
-  public async tick(): Promise<number> {
+  public tick(): number {
     const flags = this.getIF();
     const ie = this.getIE();
     const shouldServiceInterrupts = (ie & flags & 0x1F) !== 0;
@@ -1919,7 +1920,7 @@ export class CPU extends Debugger<CpuInfo> {
       this.cycles = 0;
     }
 
-    this.synchronize();
+    // this.synchronize();
 
     // the EI instruction enables the IME the following cycle to its execution
     if(this.pendingEnableIME) {

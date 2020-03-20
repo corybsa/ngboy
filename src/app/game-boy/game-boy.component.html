@@ -3,8 +3,8 @@
   <div
     [style.width]="gameBoy.getLcdInfo().width + 'px'"
     [style.height]="gameBoy.getLcdInfo().height + 'px'"
-    style="background: red; display: inline-block">
-    LCD goes here!
+    style="display: inline-block">
+    <canvas #lcdScreen width="{{gameBoy.getLcdInfo().width}}" height="{{gameBoy.getLcdInfo().height}}"></canvas>
   </div>
 
   <div id="rom-picker">

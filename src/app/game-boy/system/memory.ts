@@ -1,6 +1,7 @@
 import { Debugger } from '../util/debugger';
 import { MemoryInfo } from '../models/memory-info.model';
 import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
 
 /**
  * The GameBoy has 64KB of Memory.
@@ -68,6 +69,8 @@ export class Memory extends Debugger<MemoryInfo> {
 
   private currentRomBank = 1;
   private currentRamBank = 0;
+
+  public vramObserver = new BehaviorSubject<number>(null);
 
   constructor() {
     super();
@@ -212,6 +215,7 @@ export class Memory extends Debugger<MemoryInfo> {
     } else if(address <= 0x9FFF) {
       addr = (0x1FFF - (0x9FFF - address)) & 0xFFFF;
       this.vram[addr] = value;
+      this.vramObserver.next(address);
     } else if(address <= 0xBFFF) {
       addr = (0x1FFF - (0xBFFF - address)) & 0xFFFF;
 

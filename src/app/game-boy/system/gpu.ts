@@ -28,11 +28,11 @@ export class GPU extends Debugger<GpuInfo> {
   private scanline = 0;
   private ticks = 0;
   private previousCycles = 0;
-  private tiles = [[[]]];
+  private tiles = new Array(384).fill(new Array(8).fill(new Array(8).fill(0)));
   private lastFrame = Date.now();
   private framerate = 0;
 
-  private backgroundMap = [[[]]];
+  private backgroundMap = new Array(LCD.BG_HEIGHT).fill(new Array(LCD.BG_WIDTH).fill(new Array(8).fill(0)));
 
   constructor(
     private memory: Memory,
@@ -126,8 +126,8 @@ export class GPU extends Debugger<GpuInfo> {
     this.scanline = 0;
     this.ticks = 0;
     this.previousCycles = 0;
-    this.tiles = [[[]]];
-    this.backgroundMap = [[[]]];
+    this.tiles = new Array(384).fill(new Array(8).fill(new Array(8).fill(0)));
+    this.backgroundMap = new Array(LCD.BG_HEIGHT).fill(new Array(LCD.BG_WIDTH).fill(new Array(8).fill(0)));
     this.setLY(this.scanline);
   }
 
@@ -200,5 +200,92 @@ export class GPU extends Debugger<GpuInfo> {
    */
   private setLY(value: number) {
     this.memory.setByteAt(IORegisters.LCDC_Y_COORDINATE, value);
+  }
+
+  private createBackgroundMap() {
+    const scanlineY = this.memory.getByteAt(IORegisters.LCDC_Y_COORDINATE);
+    const lcdc = this.memory.getByteAt(IORegisters.LCDC);
+    const windowOffset = (lcdc >> 6) & 0x01;
+    const tileSet = (lcdc >> 4) & 0x01;
+    const bgOffset = (lcdc >> 3) & 0x01;
+    const windowY = this.memory.getByteAt(IORegisters.WINDOW_Y);
+    let isWindowEnabled = false;
+    let bgAddress = 0x9800;
+
+    // is the window enabled?
+    /*if(((lcdc >> 5) & 0x01) === 0x01) {
+      // is the current scanline within the bounds o the window y coordinate?
+      if(windowY <= scanlineY) {
+        isWindowEnabled = true;
+      }
+    }
+
+    if(!isWindowEnabled) {
+      // check which tile set to use
+      if(bgOffset === 1) {
+        bgAddress = 0x9C00;
+      } else {
+        bgAddress = 0x9800;
+      }
+    } else {
+      if(windowOffset === 1) {
+        bgAddress = 0x9C00;
+      } else {
+        bgAddress = 0x9800;
+      }
+    }*/
+
+    for(let row = 0; row < LCD.BG_HEIGHT; row++) {
+      const tileRow = Math.floor(row / 8) * 32;
+
+      for(let col = 0; col < LCD.BG_WIDTH; col++) {
+        const tileCol = Math.floor(col / 8);
+        let tileNum;
+
+        const tileAddress = bgAddress + tileRow + tileCol;
+        tileNum = this.memory.getByteAt(tileAddress);
+
+        if(tileSet === 0 && tileNum < 0x80) {
+          tileNum += 0x100;
+        }
+
+        this.backgroundMap[row][col][Math.floor(col % 8)] = this.tiles[tileNum][Math.floor(row % 8)][Math.floor(col % 8)];
+      }
+    }
+  }
+
+  public updateTiles(address: number) {
+    const vramAddress = (0x1FFF - (0x9FFF - address)) & 0xFFFF;
+
+    if(vramAddress >= 0x1800) {
+      this.createBackgroundMap();
+      return;
+    }
+
+    const index = address & 0xFFFE;
+    const byte1 = this.memory.getByteAt(index);
+    const byte2 = this.memory.getByteAt(index + 1);
+    const tileIndex = Math.floor(vramAddress / 16);
+    const rowIndex = Math.floor(Math.floor(vramAddress % 16) / 2);
+    let pixelIndex;
+    let pixelValue;
+
+    for(pixelIndex = 0; pixelIndex < 8; pixelIndex++) {
+      const mask = 1 << (7 - pixelIndex);
+      const msb = (byte1 & mask) >> (7 - pixelIndex);
+      const lsb = (byte2 & mask) >> (7 - pixelIndex);
+
+      if(lsb === 1 && msb === 1) {
+        pixelValue = LCD.PixelColor.BLACK;
+      } else if(lsb === 1 && msb === 0) {
+        pixelValue = LCD.PixelColor.DARK_GRAY;
+      } else if(lsb === 0 && msb === 1) {
+        pixelValue = LCD.PixelColor.LIGHT_GRAY;
+      } else {
+        pixelValue = LCD.PixelColor.WHITE;
+      }
+
+      this.tiles[tileIndex][rowIndex][pixelIndex] = pixelValue;
+    }
   }
 }
